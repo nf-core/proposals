@@ -26,8 +26,8 @@ The curator workflow is as follows:
 1. Once a issue is made, update the 'Project' status to 'proposed' (right hand side bar, under 'new-<TYPE>-proposals')
 2. Facilitate discussion on the the Issue thread, following the guidance [here](https://nf-co.re/docs/checklists/community_governance/core_team#new-pipeline-proposals-and-onboarding).
 3. Acceptance requires:
-  - Two members of the core team.
-  - One member of the core team and one member of the maintainers team.
+    - Two members of the core team.
+    - One member of the core team and one member of the maintainers team.
 5. If a proposal is accepted, update status to 'accepted', and when closing select 'Close as completed'
 6. If a proposal is turned down, update status to 'turned-down', and when closing select 'Close as not planned'
 7. If a proposal is not completed or abandoned after a year, update status to 'timed-out', when closing select 'Close as not planned'
