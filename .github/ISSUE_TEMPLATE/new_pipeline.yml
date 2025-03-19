@@ -3,7 +3,7 @@ description: Propose a new pipeline for incorporation into nf-core
 title: "New pipeline: <PROVISIONAL PIPELINE NAME>"
 labels: new pipeline
 type: pipeline
-project: pipeline
+projects: pipeline
 body:
   - type: checkboxes
     attributes:
