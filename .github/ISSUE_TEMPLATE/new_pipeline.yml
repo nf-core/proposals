@@ -6,12 +6,19 @@ projects: nf-core/104
 body:
   - type: checkboxes
     attributes:
-      label: I confirm my proposal adheres to the nf-core pipeline requirements and recommendations
+      label: I have read all of the guidelines and understand nf-core requirements
       description: You can see the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
       options:
         - label: I confirm
           required: true
 
+  - type: input
+    attributes:
+      label: What is the last heading on the requirements page that is linked above? Please copy and paste to confirm that you have visited the pages
+      description: Because ticking a box is easy
+    validations:
+        required: true
+        
   - type: input
     attributes:
       label: Pipeline title/name
