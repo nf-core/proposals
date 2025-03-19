@@ -7,4 +7,12 @@
 
 🚧 UNDER CONSTRUCTION 🚧
 
-Where new proposals for nf-core pipelines and more can be made
+This repository is used to track all community proposals for nf-core.
+
+To make a new proposal for a pipeline, please create a new issue in the repository following the template provided:
+
+- [New pipeline](https://github.com/nf-core/proposals/issues/new?template=new_pipeline.yml)
+
+To make a new proposal for a special interest group, please create a new issue in the repository following the template provided:
+
+- [New special interest group](https://github.com/nf-core/proposals/issues/new?template=new_special-interest-group.yml)
