@@ -14,8 +14,8 @@ body:
 
   - type: input
     attributes:
-      label: What is the last heading on the requirements page that is linked above? Please copy and paste to confirm that you have visited the pages
-      description: Because ticking a box is easy
+      label: What is the last heading on the requirements page that is linked above? 
+      description: Please copy and paste to confirm that you have visited the requirements pages. Because just ticking a box is easy.
     validations:
         required: true
         
