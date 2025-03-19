@@ -28,6 +28,6 @@ The curator workflow is as follows:
 3. Acceptance requires:
     - Two members of the core team.
     - One member of the core team and one member of the maintainers team.
-5. If a proposal is accepted, update status to 'accepted', and when closing select 'Close as completed'
-6. If a proposal is turned down, update status to 'turned-down', and when closing select 'Close as not planned'
-7. If a proposal is not completed or abandoned after a year, update status to 'timed-out', when closing select 'Close as not planned'
+5. If a proposal is accepted, update both the label AND status to 'accepted', and when closing select 'Close as completed'
+6. If a proposal is turned down, update both the label AND  status to 'turned-down', and when closing select 'Close as not planned'
+7. If a proposal is not completed or abandoned after a year, update both the label AND status to 'timed-out', and when closing select 'Close as not planned'
