@@ -1,7 +1,7 @@
 <h1>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-proposals_logo_dark.png">
-    <img alt="nf-core/proposals" src="docs/images/nf-core-proposals_logo_light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nfcore-proposals_logo_dark.png">
+    <img alt="nf-core/proposals" src="docs/images/nfcore-proposals_logo_light.png">
   </picture>
 </h1>
 
