@@ -1,0 +1,67 @@
+name: New special interest group proposal
+description: Propose a new special interest group for incorporation into nf-core
+title: "New special interest group: <PROVISIONAL SPECIAL INTEREST GROUP NAME>"
+labels: new special interest group
+type: special interest group
+projects: special interest group
+body:
+  - type: checkboxes
+    attributes:
+      label: I confirm my proposal adheres to the nf-core special interest group requirements and recommendations
+      description: You can see the requirements [here](https://nf-co.re/docs/guidelines/special interest groups/overview).
+      options:
+        - label: I confirm
+          required: true
+
+  - type: input
+    attributes:
+      label: special interest group name
+      description: Suggested interest group name. It should be as simple, descriptive and boring as possible.
+      placeholder: Animal Genomics
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+      label: What is it about?
+      description: Give a sentence description of the purpose of the special interest group.
+    validations:
+        required: true
+
+  - type: input
+    attributes:
+      label: Keywords
+      description: Provide a comma separated list of useful keywords for topics related to the proposal (e.g. genomics, cancer, variant calling).
+      placeholder: genomics, cancer, variant calling
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+      label: Why do we need a new special interest group?
+      description: Describe the 'usefuless' or 'novelty' of the special interest group within nf-core.
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+      label: Who would be interested?
+      description: Please give possible target audiences of the special interest groups.
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+      label: Who would lead?
+      description: Apart from the initial proposer, who else should be leading this group?
+
+  - type: input
+    attributes:
+      label: Pre-existing participating consortia, if relevant(optional)
+      description: Leave blank if not based on an existing group.
+
+  - type: input
+    attributes:
+      label: List of typical nf-core pipelines used(optional)
+      description: Please give a comma separated list of [nf-core pipelines](https://nf-co.re/pipelines/).
+      placeholder: sarek, oncoanalyzer, rnavar

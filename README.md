@@ -15,4 +15,4 @@ To make a new proposal for a pipeline, please create a new issue in the reposito
 
 To make a new proposal for a special interest group, please create a new issue in the repository following the template provided:
 
-- [New special interest group](https://github.com/nf-core/proposals/issues/new?template=new_special-interest-group.yml)
+- [New special interest group](https://github.com/nf-core/proposals/issues/new?template=new_special_interest_group.yml)
