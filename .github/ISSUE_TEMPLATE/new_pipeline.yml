@@ -2,7 +2,7 @@ name: New pipeline proposal
 description: Propose a new pipeline for incorporation into nf-core
 title: "New pipeline: nf-core/<add provisional pipeline name here>"
 labels: "new-pipeline,proposed"
-projects: new-pipeline-proposals
+projects: nf-core/104
 body:
   - type: checkboxes
     attributes:
