@@ -39,7 +39,7 @@ body:
   - type: textarea
     attributes:
       label: Please provide a schematic diagram of the proposed pipeline
-      description: Please use tool names as each 'node'. Drag and drop the image file into the text area.
+      description: Please use tool names as each 'node'. Drag and drop the image file into the text area to upload.
     validations:
         required: true
 
@@ -73,3 +73,4 @@ body:
     attributes:
       label: Are there any similar existing nf-core pipelines?
       description: Please give a comma separated list of similar or related existing [nf-core pipelines](https://nf-co.re/pipelines/).
+      placeholder: sarek, oncoanalyzer, rnavar
