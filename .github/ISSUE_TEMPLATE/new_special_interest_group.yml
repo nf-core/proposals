@@ -1,9 +1,8 @@
 name: New special interest group proposal
 description: Propose a new special interest group for incorporation into nf-core
 title: "New special interest group: <PROVISIONAL SPECIAL INTEREST GROUP NAME>"
-labels: new special interest group
-type: special interest group
-projects: special interest group
+labels: "new-special-interest-group,proposed"
+projects: new-special-interest-group-proposals
 body:
   - type: checkboxes
     attributes:
