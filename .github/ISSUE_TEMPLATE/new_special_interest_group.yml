@@ -23,7 +23,7 @@ body:
   - type: textarea
     attributes:
       label: What is it about?
-      description: Give a sentence description of the purpose of the special interest group.
+      description: Give a one sentence description of the purpose of the special interest group.
     validations:
         required: true
 
@@ -52,15 +52,15 @@ body:
   - type: textarea
     attributes:
       label: Who would lead?
-      description: Apart from the initial proposer, who else should be leading this group?
+      description: Apart from the initial proposer, who else should be leading this group? Please use Name and GitHub username if available
 
   - type: input
     attributes:
-      label: Pre-existing participating consortia, if relevant(optional)
+      label: Pre-existing participating consortia, if relevant
       description: Leave blank if not based on an existing group.
 
   - type: input
     attributes:
-      label: List of typical nf-core pipelines used(optional)
+      label: List of typical nf-core pipelines used
       description: Please give a comma separated list of [nf-core pipelines](https://nf-co.re/pipelines/).
       placeholder: sarek, oncoanalyzer, rnavar
