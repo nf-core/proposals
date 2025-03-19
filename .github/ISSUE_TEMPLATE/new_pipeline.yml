@@ -7,29 +7,29 @@ body:
     attributes:
       label: I confirm my proposal adheres to the nf-core pipeline requirements and recommendations
       description: You can see the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
-    options:
-      - label: I confirm
-        required: true
+      options:
+        - label: I confirm
+          required: true
 
   - type: input
     attributes:
       label: Pipeline title/name
       description: Names should be [lower case, without punctuation, and descriptive](https://nf-co.re/docs/guidelines/pipelines/requirements/workflow_name) (not 'fun' names).
-    options:
+    validations:
         required: true
 
   - type: input
     attributes:
       label: Keywords
       description: Provide a comma separated list of useful keywords for data type/analysis type/research field of the proposal (e.g. genomics, cancer, variant calling).
-    options:
+    validations:
         required: true
 
   - type: textarea
     attributes:
       label: What is it about?
       description: Give a short summary of the purpose of the pipeline.
-    options:
+    validations:
         required: true
 
 ## IMAGE
@@ -38,21 +38,21 @@ body:
     attributes:
       label: Why do we need a new pipeline?
       description: Describe the 'usefuless' or 'novelty' of the pipeline whether analytically or within nf-core.
-    options:
+    validations:
         required: true
 
   - type: textarea
     attributes:
       label: Who would be interested?
       description: Please give possible target audiences of the pipelines.
-    options:
+    validations:
         required: true
 
   - type: textarea
     attributes:
       label: What has been done so far
       description: Please describe the current status of the concept or code, or say if you have not stated.
-    options:
+    validations:
         required: true
 
   - type: input
