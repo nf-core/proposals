@@ -17,6 +17,7 @@ body:
     attributes:
       label: Pipeline title/name
       description: Names should be [lower case, without punctuation, and descriptive](https://nf-co.re/docs/guidelines/pipelines/requirements/workflow_name) (not 'fun' names).
+      placeholder: rnaseq
     validations:
         required: true
 
@@ -24,6 +25,7 @@ body:
     attributes:
       label: Keywords
       description: Provide a comma separated list of useful keywords for data type/analysis type/research field of the proposal (e.g. genomics, cancer, variant calling).
+      placeholder: genomics, cancer, variant calling
     validations:
         required: true
 
@@ -34,7 +36,12 @@ body:
     validations:
         required: true
 
-## IMAGE
+  - type: textarea
+    attributes:
+      label: Please provide a schematic diagram of the proposed pipeline
+      description: Please use tool names as each 'node'. Drag and drop the image file into the text area.
+    validations:
+        required: true
 
   - type: textarea
     attributes:
