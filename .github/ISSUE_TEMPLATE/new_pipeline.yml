@@ -33,6 +33,7 @@ body:
     attributes:
       label: What is it about?
       description: Give a short summary of the purpose of the pipeline.
+      placeholder: An RNA sequencing analysis pipeline using STAR, RSEM, HISAT2 or Salmon with gene/isoform counts and extensive quality control. 
     validations:
         required: true
 
@@ -40,6 +41,7 @@ body:
     attributes:
       label: Please provide a schematic diagram of the proposed pipeline
       description: Please use tool names as each 'node'. Drag and drop the image file into the text area to upload.
+      placeholder: ![](https://your.url/image/png)
     validations:
         required: true
 
@@ -54,6 +56,7 @@ body:
     attributes:
       label: Who would be interested?
       description: Please give possible target audiences of the pipelines.
+      placeholder: Researchers working on transcriptomics.
     validations:
         required: true
 
@@ -61,13 +64,15 @@ body:
     attributes:
       label: What has been done so far
       description: Please describe the current status of the concept or code, or say if you have not stated.
+      placeholder: I have started making nf-core modules for tools I would use in the proposed pipeline.
     validations:
         required: true
 
   - type: input
     attributes:
       label: URL to existing work (if applicable)
-      description: If you have already started working on the concept, please describe the current status 
+      description: If you have already started working on the concept, please describe the current status
+      placeholder: https://github.com/nf-core/rnaseq
 
   - type: input
     attributes:
