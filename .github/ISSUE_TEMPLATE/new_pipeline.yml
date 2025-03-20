@@ -9,7 +9,9 @@ body:
       label: I have read all of the guidelines and understand nf-core requirements
       description: You can see the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
       options:
-        - label: I confirm
+        - label: Workflows must be built with Nextflow and use the nf-core pipeline template.
+          required:
+        - label: Pipelines must pass nf-core lint tests and use standardized parameters.
           required: true
 
   - type: input
