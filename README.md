@@ -5,8 +5,6 @@
   </picture>
 </h1>
 
-🚧 UNDER CONSTRUCTION 🚧
-
 This repository is used to track all community proposals for nf-core.
 
 ## Proposer Documentation
