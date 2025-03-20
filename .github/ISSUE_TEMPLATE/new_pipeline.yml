@@ -6,7 +6,7 @@ projects: nf-core/104
 body:
   - type: checkboxes
     attributes:
-      label: "I confirm my proposed pipeline will follow nf-core guidelines. In particular, My pipeline:"
+      label: "I confirm my proposed pipeline will follow nf-core guidelines. Most importantly, my pipeline:"
       description: You can see all the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
       options:
         - label: will be built with Nextflow and use the nf-core pipeline template.
