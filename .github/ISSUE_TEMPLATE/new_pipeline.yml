@@ -6,12 +6,26 @@ projects: nf-core/104
 body:
   - type: checkboxes
     attributes:
-      label: I have read all of the guidelines and understand nf-core requirements
+      label: I have read all of the guidelines and understand nf-core requirements. My pipeline:
       description: You can see the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
       options:
-        - label: Workflows must be built with Nextflow and use the nf-core pipeline template.
-          required:
-        - label: Pipelines must pass nf-core lint tests and use standardized parameters.
+        - label: will be built with Nextflow and use the nf-core pipeline template.
+          required: true
+        - label: will pass nf-core lint tests and use standardized parameters.
+          required: true
+        - label: will be community-owned and developed within the nf-core organization.
+          required: true
+        - label: will be open source under the MIT license with proper credits and acknowledgments
+          required: true
+        - label: name will be descriptive, all lowercase, and without punctuation.
+          required: true
+        - label: will use the nf-core pipeline template and predominantly use official nf-core modules.
+          required: true
+        - label: will focus on a specific data/analysis type with appropriate scope.
+          required: true
+        - label: will have properly maintained documentation.
+          required: true
+        - label: will be must be bundled using versioned Docker/Singularity containers.
           required: true
 
   - type: input
