@@ -32,7 +32,7 @@ The curator workflow is as follows:
 6. If a proposal is turned down, update both the label AND  status to 'turned-down', and when closing select 'Close as not planned'
 7. If a proposal is not completed or abandoned after a year, update both the label AND status to 'timed-out', and when closing select 'Close as not planned'
 
-### Special Interest GRoups
+### Special Interest Groups
 
 The curator workflow is as follows:
 
