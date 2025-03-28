@@ -4,30 +4,7 @@ title: "New pipeline: nf-core/<add provisional pipeline name here>"
 labels: "new-pipeline,proposed"
 projects: nf-core/104
 body:
-  - type: checkboxes
-    attributes:
-      label: "I confirm my proposed pipeline will follow nf-core guidelines. Most importantly, my pipeline will:"
-      description: You can see all the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
-      options:
-        - label: be built with Nextflow.
-          required: true
-        - label: pass nf-core lint tests and use standardized parameters.
-          required: true
-        - label: be community-owned and developed within the nf-core organization.
-          required: true
-        - label: open source under the MIT license with proper credits and acknowledgments.
-          required: true
-        - label: have a descriptive, all lowercase, and without punctuation name.
-          required: true
-        - label: use the nf-core pipeline template and predominantly use official nf-core modules.
-          required: true
-        - label: focus on a specific data/analysis type with appropriate scope.
-          required: true
-        - label: have properly maintained documentation.
-          required: true
-        - label: be bundled using versioned Docker/Singularity containers.
-          required: true
-        
+
   - type: input
     attributes:
       label: Pipeline title/name
@@ -59,6 +36,30 @@ body:
       placeholder: ![](https://your.url/image/png)
     validations:
         required: true
+
+  - type: checkboxes
+    attributes:
+      label: "I confirm my proposed pipeline will follow nf-core guidelines. Most importantly, my pipeline will:"
+      description: You can see all the requirements [here](https://nf-co.re/docs/guidelines/pipelines/overview).
+      options:
+        - label: be built with Nextflow.
+          required: true
+        - label: pass nf-core lint tests and use standardized parameters.
+          required: true
+        - label: be community-owned and developed within the nf-core organization.
+          required: true
+        - label: open source under the MIT license with proper credits and acknowledgments.
+          required: true
+        - label: have a descriptive, all lowercase, and without punctuation name.
+          required: true
+        - label: use the nf-core pipeline template and predominantly use official nf-core modules.
+          required: true
+        - label: focus on a specific data/analysis type with appropriate scope.
+          required: true
+        - label: have properly maintained documentation.
+          required: true
+        - label: be bundled using versioned Docker/Singularity containers.
+          required: true
 
   - type: textarea
     attributes:
