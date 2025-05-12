@@ -13,7 +13,9 @@ body:
   - type: input
     attributes:
       label: Champion
-      description: "GitHub handle of the proposal's champion"
+      description: "GitHub handle of the proposal's champion (if already found)"
+      placeholder:
+        e.g. Maxime Garcia (@maxulysse)
   - type: textarea
     attributes:
       label: Background & Motivation
@@ -25,7 +27,10 @@ body:
     attributes:
       label: Goals
       description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims to achieve 
-      placeholder: 
+      placeholder: |
+        - Goal 1
+        - Goal 2
+        - Goal 3
     validations:
         required: true
   - type: textarea
@@ -45,7 +50,10 @@ body:
   - type: textarea
     attributes:
       label: References
-      description: Post links to previous possibly related discussions e.g. on slack
-      placeholder: 
+      description: Post links to previous or current possibly-related discussions e.g. on slack
+      placeholder: |
+        - Slack discussion - <URL>
+        - Original GitHub Issue - https://github.com/nf-core/<URL>
+        - Prototype - https://github.com/nf-core/<URL>
     validations:
         required: false
