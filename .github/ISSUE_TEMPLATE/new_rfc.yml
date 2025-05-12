@@ -1,0 +1,51 @@
+name: New RFC proposal
+description: Propose a major new functionality for incorporation into nf-core
+title: "New RFC: <short sentence descibing prosposal>"
+labels: "RFC,proposed"
+projects: nf-core/128
+body:
+  - type: input
+    attributes:
+      label: Summary
+      description: Short 2-3 sentence summary of RFC proposal
+    validations:
+        required: true
+  - type: input
+    attributes:
+      label: Champion
+      description: "GitHub handle of the proposal's champion"
+  - type: textarea
+    attributes:
+      label: Background & Motivation
+      description: Provide the context of the proposal, summarising the existing status-quo or issues
+      placeholder: 
+    validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: Goals
+      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims to achieve 
+      placeholder: 
+    validations:
+        required: true
+  - type: textarea
+    attributes:
+      label: Goals
+      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims NOT to achieve 
+      placeholder: 
+    validations:
+        required: false
+  - type: textarea
+    attributes:
+      label: Details
+      description: Provide details of the proposed RFC, such as technical details of possible implementation
+      placeholder: 
+    validations:
+        required: false
+  - type: textarea
+    attributes:
+      label: References
+      description: Post links to previous possibly related discussions e.g. on slack
+      placeholder: 
+    validations:
+        required: false
