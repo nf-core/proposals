@@ -30,7 +30,7 @@ body:
         required: true
   - type: textarea
     attributes:
-      label: Goals
+      label: NonGoals
       description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims NOT to achieve 
       placeholder: 
     validations:
