@@ -2,7 +2,7 @@ name: New RFC proposal
 description: Propose a major new functionality for incorporation into nf-core
 title: "New RFC: <short sentence describing proposal>"
 labels: "new-rfc,proposed"
-projects: nf-core/128
+projects: nf-core/127
 assignees:
   - nf-core/core
 body:
