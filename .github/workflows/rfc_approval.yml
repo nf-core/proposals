@@ -2,14 +2,14 @@ name: RFC approval automation
 
 on:
   issues:
-    types: [opened]
+    types: [opened, closed]
   issue_comment:
     types: [created, edited]
 
 jobs:
   rfc_approval:
-    # Only run for RFC proposal issues that are still open
-    if: startsWith(github.event.issue.title, 'New RFC') && github.event.issue.state == 'open'
+    # Only run for RFC proposal issues
+    if: startsWith(github.event.issue.title, 'New RFC')
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +21,12 @@ jobs:
             const issueNumber = context.issue.number;
             const org = context.repo.owner;
             const repo = context.repo.repo;
+
+            // Ignore comments on closed issues
+            if (context.eventName === 'issue_comment' && context.payload.issue.state === 'closed') {
+              console.log('Comment event on closed issue, ignoring.');
+              return;
+            }
 
             // ---------------------------------------------
             // Fetch members of the core team
@@ -45,12 +51,21 @@ jobs:
             const quorum = Math.ceil(teamMembers.length / 2);
             console.log(`Quorum set to ${quorum}.`);
 
+            // Helper for list formatting and complete status body
+            function formatUserList(users) {
+              return users.length ? users.map(u => `[@${u}](https://github.com/${u})`).join(', ') : '-';
+            }
+
+            function generateStatusBody(status, approvalsSet, rejectionsSet, awaitingArr) {
+              return `## RFC approval status: ${status}\n\nRFC has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\nCore team approvers: ${formatUserList([...approvalsSet])}\nRejection from: ${formatUserList([...rejectionsSet])}\nAwaiting approval from: ${formatUserList(awaitingArr)}`;
+            }
+
             // -------------------------------------------------
             // If this workflow was triggered by issue creation
             // -------------------------------------------------
             if (context.eventName === 'issues' && context.payload.action === 'opened') {
+              const body = generateStatusBody('🕐 Pending', new Set(), new Set(), teamMembers);
               console.log('Creating initial comment for review status');
-              const body = `## RFC approval status: 🕐 Pending\n\nCore team approvers:\nRejection from: -\nAwaiting approval from:`;
 
               await github.rest.issues.createComment({
                 owner: org,
@@ -62,11 +77,10 @@ jobs:
             }
 
             // ---------------------------------------------------------------------
-            // From here on we handle updates triggered by comment creation / edits
+            // Collect comments and compute votes (shared for comment & closed events)
             // ---------------------------------------------------------------------
 
-            // Collect all comments on the issue (may require pagination)
-            console.log('Fetching issue comments');
+            // Collect all comments on the issue
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: org,
               repo,
@@ -97,24 +111,34 @@ jobs:
             console.log(`Rejections (${rejections.size}):`, [...rejections]);
 
             const awaiting = teamMembers.filter(u => !approvals.has(u) && !rejections.has(u));
-            const status = approvals.size >= quorum && rejections.size === 0 ? '✅ Approved' : '🕐 Pending';
 
-            function formatUserList(users) {
-              return users.length ? users.map(u => `[@${u}](https://github.com/${u})`).join(', ') : '-';
+            // Determine status
+            let status = '🕐 Pending';
+
+            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && rejections.size > 0) {
+              status = '❌ Rejected';
+            } else if (approvals.size >= quorum && rejections.size === 0) {
+              status = '✅ Approved';
             }
-            const statusBody = `## RFC approval status: ${status}\n\nCore team approvers: ${formatUserList([...approvals])}\nRejection from: ${formatUserList([...rejections])}\nAwaiting approval from: ${formatUserList(awaiting)}`;
+
+            const statusBody = generateStatusBody(status, approvals, rejections, awaiting);
             console.log('New status body to post:\n', statusBody);
 
             // Try to locate the existing status comment (starts with our header)
             let statusComment = comments.find(c => c.body.startsWith('## RFC approval status:'));
 
             if (statusComment) {
-              await github.rest.issues.updateComment({
-                owner: org,
-                repo,
-                comment_id: statusComment.id,
-                body: statusBody
-              });
+              if (statusComment.body.trim() === statusBody.trim()) {
+                console.log('Status comment already up to date - no update required.');
+              } else {
+                console.log('Updating existing status comment.');
+                await github.rest.issues.updateComment({
+                  owner: org,
+                  repo,
+                  comment_id: statusComment.id,
+                  body: statusBody
+                });
+              }
             } else {
               // Fallback: create a new status comment if missing (shouldn't normally happen)
               await github.rest.issues.createComment({
