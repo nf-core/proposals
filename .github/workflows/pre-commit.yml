@@ -1,29 +1,17 @@
-name: Lint tools code formatting
+name: Lint code
 on:
   push:
+    branches:
+      - main
   pull_request:
 
-# Cancel if a newer run is started
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  Pre-commit:
+  pre-commit:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          python-version: "3.12"
-          cache: "pip"
-
-      - name: Install pre-commit
-        run: pip install pre-commit
-
-      - name: Run pre-commit
-        run: pre-commit run --all-files
+          node-version: 20
+      - run: npm install --only=dev
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
