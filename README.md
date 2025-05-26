@@ -44,3 +44,16 @@ The curator workflow is as follows:
 - [ ] If a proposal is accepted, update both the label AND status to 'accepted', and when closing select 'Close as completed'
 - [ ] If a proposal is turned down, update both the label AND status to 'turned-down', and when closing select 'Close as not planned'
 - [ ] If a proposal is not completed or abandoned after a year, update both the label AND status to 'timed-out', and when closing select 'Close as not planned'
+
+### Request for Comment (RFC)
+
+The curator workflow is as follows:
+
+- [ ] Once a issue is made, update the 'Project' status to 'proposed' (right hand side bar, under 'new-<TYPE>-proposals')
+- [ ] Facilitate discussion on the the Issue thread, following the guidance [here](https://nf-co.re/docs/contributing/project_proposals).
+- [ ] Acceptance requires a minimum of OKs from:
+  - Two members of the core team.
+  - One member of the core team and one member of the maintainers team.
+- [ ] If a proposal is accepted, update both the label AND status to 'accepted', and when closing select 'Close as completed'
+- [ ] If a proposal is turned down, update both the label AND status to 'turned-down', and when closing select 'Close as not planned'
+- [ ] If a proposal is not completed or abandoned after a year, update both the label AND status to 'timed-out', and when closing select 'Close as not planned'
