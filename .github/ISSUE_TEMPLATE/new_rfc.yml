@@ -37,12 +37,12 @@ body:
         required: true
   - type: textarea
     attributes:
-      label: NonGoals
+      label: "Non-Goals"
       description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims NOT to achieve. 
       placeholder: |
-        - NonGoal 1
-        - NonGoal 2
-        - NonGoal 3
+        - Non-goal 1
+        - Non-goal 2
+        - Non-goal 3
     validations:
         required: false
   - type: textarea
