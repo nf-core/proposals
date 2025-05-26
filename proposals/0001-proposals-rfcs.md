@@ -32,12 +32,6 @@ Not every project in nf-core requires an RFC. The process should only be used fo
 - Creation of new nf-core fundamental product / initiative
 - Changes to base dependencies and requirements that span many pipelines
 
-To help give a better idea of the scale that a request should reach to require an RFC, here are a few real-life examples (from before we had an RFC procedure):
-
-- We would like to add a new ‘product’ offered by and for the community in the form of standardised analysis notebooks for routine post-pipeline analyses that require more user experimentation. This would require new subcommands of nf-core/tools, a new template, new repositories, and a new section on the top bar of the nf-core website.
-- I would like to propose a new subcommand to the nf-core tools package, called `nf-core testdatasets`. The purpose of this subcommand is to make it easier for developers to search through the very large and convoluted nf-core/test-datasets repository for suitable test-data files to promote reuse of existing data files.
-- There is a deficiency within the nf-core/modules specifications regarding standardised use of the `ext.args` variable. The use of the naming scheme `args`, `args2`, `args3` are not intuitive for developers to know which `arg` goes to which command in the module. We propose to update the specifications to use the command/subcommand as a suffix instead e.g., `args_samtoolssort`. This would require a change to every module in the repository and improved documentation support.
-
 As a rule of thumb, if a proposal will require changes across two or more different repositories, it is a good candidate for an RFC. Projects that are smaller in scope should typically be raised as a new issue on the relevant GitHub repository instead.
 
 # Goals
