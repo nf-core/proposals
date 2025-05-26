@@ -18,14 +18,14 @@ body:
       description: Suggested interest group name. It should be as simple, descriptive and boring as possible.
       placeholder: Animal Genomics
     validations:
-        required: true
+      required: true
 
   - type: textarea
     attributes:
       label: What is it about?
       description: Give a one sentence description of the purpose of the special interest group.
     validations:
-        required: true
+      required: true
 
   - type: input
     attributes:
@@ -33,21 +33,21 @@ body:
       description: Provide a comma separated list of useful keywords for topics related to the proposal (e.g. genomics, cancer, variant calling).
       placeholder: genomics, cancer, variant calling
     validations:
-        required: true
+      required: true
 
   - type: textarea
     attributes:
       label: Why do we need a new special interest group?
       description: Describe the 'usefuless' or 'novelty' of the special interest group within nf-core.
     validations:
-        required: true
+      required: true
 
   - type: textarea
     attributes:
       label: Who would be interested?
       description: Please give possible target audiences of the special interest groups.
     validations:
-        required: true
+      required: true
 
   - type: textarea
     attributes:
