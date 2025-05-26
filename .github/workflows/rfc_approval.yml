@@ -50,7 +50,7 @@ jobs:
             // -------------------------------------------------
             if (context.eventName === 'issues' && context.payload.action === 'opened') {
               console.log('Creating initial comment for review status');
-              const body = `# RFC approval status: Pending\n\nCore team approvers:\nRejection from:\nAwaiting approval from:`;
+              const body = `## RFC approval status: 🕐 Pending\n\nCore team approvers:\nRejection from: -\nAwaiting approval from:`;
 
               await github.rest.issues.createComment({
                 owner: org,
@@ -97,13 +97,16 @@ jobs:
             console.log(`Rejections (${rejections.size}):`, [...rejections]);
 
             const awaiting = teamMembers.filter(u => !approvals.has(u) && !rejections.has(u));
-            const status = approvals.size >= quorum && rejections.size === 0 ? 'Approved' : 'Pending';
+            const status = approvals.size >= quorum && rejections.size === 0 ? '✅ Approved' : '🕐 Pending';
 
-            const statusBody = `# RFC approval status: ${status}\n\nCore team approvers: ${approvals.size ? [...approvals].join(', ') : 'None'}\nRejection from: ${rejections.size ? [...rejections].join(', ') : 'None'}\nAwaiting approval from: ${awaiting.length ? awaiting.join(', ') : 'None'}`;
+            function formatUserList(users) {
+              return users.length ? users.map(u => `[@${u}](https://github.com/${u})`).join(', ') : '-';
+            }
+            const statusBody = `## RFC approval status: ${status}\n\nCore team approvers: ${formatUserList([...approvals])}\nRejection from: ${formatUserList([...rejections])}\nAwaiting approval from: ${formatUserList(awaiting)}`;
             console.log('New status body to post:\n', statusBody);
 
             // Try to locate the existing status comment (starts with our header)
-            let statusComment = comments.find(c => c.body.startsWith('# RFC approval status:'));
+            let statusComment = comments.find(c => c.body.startsWith('## RFC approval status:'));
 
             if (statusComment) {
               await github.rest.issues.updateComment({
