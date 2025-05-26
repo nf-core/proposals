@@ -11,40 +11,39 @@ body:
       label: Summary
       description: Short 2-3 sentence summary of RFC proposal.
     validations:
-        required: true
+      required: true
   - type: input
     attributes:
       label: Champion
       description: "GitHub handle of the proposal's champion (if already found)."
-      placeholder:
-        e.g. @maxulysse
+      placeholder: e.g. @maxulysse
   - type: textarea
     attributes:
       label: Background & Motivation
       description: Provide the context of the proposal, summarising the existing status-quo or issues.
-      placeholder: 
+      placeholder:
     validations:
-        required: true
+      required: true
   - type: textarea
     attributes:
       label: Goals
-      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims to achieve 
+      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims to achieve
       placeholder: |
         - Goal 1
         - Goal 2
         - Goal 3
     validations:
-        required: true
+      required: true
   - type: textarea
     attributes:
       label: "Non-Goals"
-      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims NOT to achieve. 
+      description: Provide a 2-3 bullet point list of the main aims and objectives the outcome RFC aims NOT to achieve.
       placeholder: |
         - Non-goal 1
         - Non-goal 2
         - Non-goal 3
     validations:
-        required: false
+      required: false
   - type: textarea
     attributes:
       label: References
@@ -54,4 +53,4 @@ body:
         - Original GitHub Issue - https://github.com/nf-core/<URL>
         - Prototype - https://github.com/nf-core/<URL>
     validations:
-        required: false
+      required: false
