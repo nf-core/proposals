@@ -57,7 +57,23 @@ jobs:
             }
 
             function generateStatusBody(status, approvalsSet, rejectionsSet, awaitingArr) {
-              return `## RFC approval status: ${status}\n\nRFC has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\nCore team approvers: ${formatUserList([...approvalsSet])}\nRejection from: ${formatUserList([...rejectionsSet])}\nAwaiting approval from: ${formatUserList(awaitingArr)}`;
+              const approvers = [...approvalsSet];
+              const rejecters = [...rejectionsSet];
+              const awaiting = awaitingArr;
+              let body = `## RFC approval status: ${status}\n\nRFC has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\n`;
+              if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
+                body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
+                if (approvers.length > 0) {
+                  body += `| ✅&nbsp;Approved | ${formatUserList(approvers)} |\n`;
+                }
+                if (rejecters.length > 0) {
+                  body += `| ❌&nbsp;Rejected | ${formatUserList(rejecters)} |\n`;
+                }
+                if (awaiting.length > 0) {
+                  body += `| 🕐&nbsp;Pending | ${formatUserList(awaiting)} |\n`;
+                }
+              }
+              return body;
             }
 
             // -------------------------------------------------
