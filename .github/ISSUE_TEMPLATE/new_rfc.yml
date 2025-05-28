@@ -6,9 +6,10 @@ projects: nf-core/127
 assignees:
   - nf-core/core
 body:
-  - type: checkbox
-    label: Have you read the [RFC / Proposal documentation](https://nf-co.re/docs/contributing/project_proposals)?
-    options:
+  - type: checkboxes
+    attributes:
+      label: Have you read the [RFC / Proposal documentation](https://nf-co.re/docs/contributing/project_proposals)?
+      options:
         - label: Yes, I have read and understood the docs
           required: true
   - type: textarea
