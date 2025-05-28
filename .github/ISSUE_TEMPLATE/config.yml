@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: RFC documentation
+    url: https://nf-co.re/docs/contributing/project_proposals
+    about: Process for proposing major new nf-core projects
+  - name: Pipeline Guidelines
+    url: https://nf-co.re/docs/guidelines/pipelines/overview
+    about: Guidelines and requirements for nf-core pipelines.
