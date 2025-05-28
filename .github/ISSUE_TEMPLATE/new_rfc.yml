@@ -8,9 +8,10 @@ assignees:
 body:
   - type: checkboxes
     attributes:
-      label: Have you read the [RFC / Proposal documentation](https://nf-co.re/docs/contributing/project_proposals)?
+      label: Have you read the RFC docs?
+      description: See the [RFC / Proposal documentation](https://nf-co.re/docs/contributing/project_proposals)
       options:
-        - label: Yes, I have read and understood the docs
+        - label: Yes, I have read and understood the RFC docs
           required: true
   - type: textarea
     attributes:
