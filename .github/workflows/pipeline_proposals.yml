@@ -85,22 +85,18 @@ jobs:
             }
 
             // Helper function to update issue status and labels
-            async function updateIssueStatus(status, closeReason = null) {
+            async function updateIssueStatus(status) {
               const labels = [];
-              let state = 'open';
 
               switch (status) {
                 case '✅ Approved':
                   labels.push('accepted');
-                  state = 'closed';
                   break;
                 case '❌ Rejected':
                   labels.push('turned-down');
-                  state = 'closed';
                   break;
                 case '⏰ Timed Out':
                   labels.push('timed-out');
-                  state = 'closed';
                   break;
                 default:
                   labels.push('proposed');
@@ -113,17 +109,6 @@ jobs:
                 issue_number: issueNumber,
                 labels: labels
               });
-
-              // Close the issue if needed
-              if (state === 'closed') {
-                await github.rest.issues.update({
-                  owner: org,
-                  repo,
-                  issue_number: issueNumber,
-                  state: 'closed',
-                  state_reason: closeReason || (status === '✅ Approved' ? 'completed' : 'not_planned')
-                });
-              }
             }
 
             // Handle label changes
