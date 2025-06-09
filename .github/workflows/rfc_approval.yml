@@ -48,7 +48,7 @@ jobs:
 
             const teamMembers = await getTeamMembers();
             console.log('Core team members:', teamMembers);
-            const quorum = Math.ceil(teamMembers.length / 2);
+            const quorum = Math.ceil(teamMembers.length * 0.8); // 80% quorum
             console.log(`Quorum set to ${quorum}.`);
 
             // Helper for list formatting and complete status body
