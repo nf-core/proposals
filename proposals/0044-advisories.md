@@ -50,11 +50,11 @@ Initially, we will allow any nf-core maintainer and potentially users to submit 
 
 # Unresolved Questions
 
-- Technical implementation details need to be resolved, including:
-  - Integration with existing Astro layouts without creating a separate layout for this content type (Request by @mashehu)
-  - Implementation of search functionality with version range support (Request by @SPPearce)
-  - Integration into the pipeline pages for each affected revision (Subject to a separate pull request because of technical complexity?)
-  - Integration into the module/subworkflow pages (Subject to discussion, whether desirable at all.)
+- [] Technical implementation details need to be resolved, including:
+  - [x] Integration with existing Astro layouts without creating a separate layout for this content type (Request by @mashehu)
+  - [] Implementation of search functionality with version range support (Request by @SPPearce)
+  - [] Integration into the pipeline pages for each affected revision (Subject to a separate pull request because of technical complexity?)
+  - [] Integration into the module/subworkflow pages (Subject to discussion, whether desirable at all.)
 
 # References
 
