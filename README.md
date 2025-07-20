@@ -60,12 +60,27 @@ To make a new proposal, please create a new issue in the repository following th
 
 **Manual workflow:**
 
-- [ ] Update 'Project' status to 'proposed' (right sidebar under 'new-special-interest-group-proposals')
-- [ ] Facilitate discussion following [guidance here](https://nf-co.re/blog/2024/special_interest_groups)
-- [ ] Acceptance requires two core team members
-- [ ] If accepted: Update label and status to 'accepted', close as 'completed'
-- [ ] If rejected: Update label and status to 'turned-down', close as 'not planned'
-- [ ] For timed-out proposals (after 1 year): Update label and status to 'timed-out', close as 'not planned'
+- [ ] Once a issue is made, update the 'Project' status to 'proposed' (right hand side bar, under 'new-<TYPE>-proposals')
+- [ ] Facilitate discussion on the the Issue thread, following the guidance [here](https://nf-co.re/blog/2024/special_interest_groups).
+- [ ] Acceptance requires a minimum of OKs from:
+  - Two members of the core team.
+- [ ] If a proposal is accepted, update both the label AND status to 'accepted', and when closing select 'Close as completed'
+- [ ] If a proposal is turned down, update both the label AND status to 'turned-down', and when closing select 'Close as not planned'
+- [ ] If a proposal is not completed or abandoned after a year, update both the label AND status to 'timed-out', and when closing select 'Close as not planned'
+
+### Request for Comment (RFC)
+
+The curator workflow is as follows:
+
+- [ ] Once a issue is made, update the 'Project' status to 'proposed' (right hand side bar, under 'new-<TYPE>-proposals')
+- [ ] Facilitate discussion on the the Issue thread, following the guidance [here](https://nf-co.re/docs/contributing/project_proposals).
+- [ ] Acceptance requires quorum from the nf-core core team, done via voting in comments with `/accept` or `/reject`
+- [ ] If a proposal is turned down, update both the label AND status to 'turned-down', and when closing select 'Close as not planned'
+- [ ] If a proposal is accepted, update both the label AND status to 'accepted', and ask the champion to write a formal RFC and begin initial development.
+- [ ] When the PR is opened the corresponding issue can be closed.
+- [ ] Verify that feedback has been provided to the champion.
+- [ ] Propose an optional Bytesize talk about the proposal.
+- [ ] Finally merge the PR when the development is complete.
 
 ## Developer Documentation
 
