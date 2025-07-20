@@ -1,0 +1,95 @@
+name: SIG approval automation
+
+on:
+  issues:
+    types: [opened, closed, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  sig_approval:
+    # Only run for SIG proposal issues
+    if: startsWith(github.event.issue.title, 'New special interest group')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Handle SIG approval logic
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
+        with:
+          github-token: ${{ secrets.nf_core_bot_auth_token }}
+          script: |
+            const ApprovalManager = require('./.github/workflows/lib/approval.js');
+
+            const issueNumber = context.issue.number;
+            const org = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Initialize approval manager
+            const approvalManager = await new ApprovalManager(github, org, repo, issueNumber).initialize();
+
+            // Ignore comments on closed issues
+            if (context.eventName === 'issue_comment' && context.payload.issue.state === 'closed') {
+              console.log('Comment event on closed issue, ignoring.');
+              return;
+            }
+
+            const requiredCoreApprovals = 2;
+            console.log(`Required core team approvals: ${requiredCoreApprovals}`);
+
+            function generateStatusBody(status) {
+              const approvers = [...approvalManager.coreApprovals];
+              const rejecters = [...approvalManager.coreRejections];
+              const awaiting = approvalManager.awaitingCore;
+
+              let body = `## Approval status: ${status}\n\nSIG proposal requires approvals from ${requiredCoreApprovals} core team members.\n\n`;
+              body += `Current approvals: ${approvalManager.coreApprovals.size}/${requiredCoreApprovals}\n\n`;
+
+              if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
+                body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
+                if (approvers.length > 0) {
+                  body += `| ✅&nbsp;Approved | ${approvalManager.formatUserList(approvers)} |\n`;
+                }
+                if (rejecters.length > 0) {
+                  body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
+                }
+                if (awaiting.length > 0) {
+                  body += `| 🕐&nbsp;Pending | ${approvalManager.formatUserList(awaiting)} |\n`;
+                }
+              }
+              return body;
+            }
+
+            // Handle label changes
+            if (context.eventName === 'issues' && (context.payload.action === 'labeled' || context.payload.action === 'unlabeled')) {
+              const label = context.payload.label.name;
+              if (label === 'timed-out') {
+                console.log('Timed-out label detected, updating status');
+                const statusBody = generateStatusBody('⏰ Timed Out');
+                await approvalManager.updateStatusComment(statusBody);
+                return;
+              }
+            }
+
+            // Handle new issue creation
+            if (context.eventName === 'issues' && context.payload.action === 'opened') {
+              const body = generateStatusBody('🕐 Pending');
+              console.log('Creating initial comment for review status');
+              await approvalManager.updateStatusComment(body);
+              await approvalManager.updateIssueStatus('🕐 Pending');
+              return;
+            }
+
+            // Determine status
+            let status = '🕐 Pending';
+
+            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0)) {
+              status = '❌ Rejected';
+            } else if (approvalManager.coreApprovals.size >= requiredCoreApprovals) {
+              status = '✅ Approved';
+            }
+
+            const statusBody = generateStatusBody(status);
+            console.log('New status body to post:\n', statusBody);
+
+            await approvalManager.updateStatusComment(statusBody);
+            await approvalManager.updateIssueStatus(status);
