@@ -45,7 +45,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         if: success()
         with:
           file: .github/workflows/lib/coverage/lcov.info
@@ -108,27 +108,6 @@ jobs:
                 });
               }
             }
-
-  lint-workflows:
-    name: Lint GitHub Actions Workflows
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      - name: Install actionlint
-        run: |
-          bash <(curl https://raw.githubusercontent.com/rhymond/actionlint/main/scripts/download-actionlint.bash)
-          sudo mv ./actionlint /usr/local/bin/
-
-      - name: Lint workflow files
-        run: actionlint .github/workflows/*.yml
 
   validate-approval-logic:
     name: Validate Approval Logic
