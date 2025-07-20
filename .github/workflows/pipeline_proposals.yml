@@ -9,7 +9,7 @@ on:
 jobs:
   pipeline_approval:
     # Only run for pipeline proposal issues
-    if: startsWith(github.event.issue.title, 'New Pipeline')
+    if: startsWith(github.event.issue.title, 'New pipeline')
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +18,14 @@ jobs:
         with:
           github-token: ${{ secrets.nf_core_bot_auth_token }}
           script: |
+            const ApprovalManager = require('./.github/workflows/lib/approval.js');
+
             const issueNumber = context.issue.number;
             const org = context.repo.owner;
             const repo = context.repo.repo;
+
+            // Initialize approval manager
+            const approvalManager = await new ApprovalManager(github, org, repo, issueNumber).initialize();
 
             // Ignore comments on closed issues
             if (context.eventName === 'issue_comment' && context.payload.issue.state === 'closed') {
@@ -28,87 +33,37 @@ jobs:
               return;
             }
 
-            // ---------------------------------------------
-            // Fetch members of the core and maintainer teams
-            // ---------------------------------------------
-            async function getTeamMembers(teamSlug) {
-              try {
-                const res = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
-                  org,
-                  team_slug: teamSlug,
-                  per_page: 100
-                });
-                console.log(`Fetched ${res.data.length} ${teamSlug} team members.`);
-                return res.data.map(m => m.login);
-              } catch (err) {
-                console.error(`Failed to fetch ${teamSlug} team members:`, err);
-                throw err;
-              }
-            }
 
-            const coreTeamMembers = await getTeamMembers('core');
-            const maintainerTeamMembers = await getTeamMembers('maintainers');
-            console.log('Core team members:', coreTeamMembers);
-            console.log('Maintainer team members:', maintainerTeamMembers);
+            function generateStatusBody(status) {
 
-            // Helper for list formatting and complete status body
-            function formatUserList(users) {
-              return users.length ? users.map(u => `[@${u}](https://github.com/${u})`).join(', ') : '-';
-            }
+              const coreApprovers = [...approvalManager.coreApprovals];
+              const maintainerApprovers = [...approvalManager.maintainerApprovals];
+              const rejecters = [...approvalManager.coreRejections, ...approvalManager.maintainerRejections];
+              const awaitingCore = [...approvalManager.awaitingCore];
+              const awaitingMaintainers = [...approvalManager.awaitingMaintainers];
 
-            function generateStatusBody(status, coreApprovalsSet, maintainerApprovalsSet, rejectionsSet, awaitingCore, awaitingMaintainers) {
-              const coreApprovers = [...coreApprovalsSet];
-              const maintainerApprovers = [...maintainerApprovalsSet];
-              const rejecters = [...rejectionsSet];
-              let body = `## Pipeline proposal approval status: ${status}\n\n`;
+              let body = `## Approval status: ${status}\n\n`;
               body += `Required approvals: Either 2 core team members OR 1 core team member + 1 maintainer\n\n`;
 
               if (coreApprovers.length > 0 || maintainerApprovers.length > 0 || rejecters.length > 0 || awaitingCore.length > 0 || awaitingMaintainers.length > 0) {
                 body += `|Review&nbsp;Status|Team members|\n|--|--|\n`;
                 if (coreApprovers.length > 0) {
-                  body += `| ✅&nbsp;Approved (Core) | ${formatUserList(coreApprovers)} |\n`;
+                  body += `| ✅&nbsp;Approved (Core) | ${approvalManager.formatUserList(coreApprovers)} |\n`;
                 }
                 if (maintainerApprovers.length > 0) {
-                  body += `| ✅&nbsp;Approved (Maintainer) | ${formatUserList(maintainerApprovers)} |\n`;
+                  body += `| ✅&nbsp;Approved (Maintainer) | ${approvalManager.formatUserList(maintainerApprovers)} |\n`;
                 }
                 if (rejecters.length > 0) {
-                  body += `| ❌&nbsp;Rejected | ${formatUserList(rejecters)} |\n`;
+                  body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
                 }
                 if (awaitingCore.length > 0) {
-                  body += `| 🕐&nbsp;Pending (Core) | ${formatUserList(awaitingCore)} |\n`;
+                  body += `| 🕐&nbsp;Pending (Core) | ${approvalManager.formatUserList(awaitingCore)} |\n`;
                 }
                 if (awaitingMaintainers.length > 0) {
-                  body += `| 🕐&nbsp;Pending (Maintainer) | ${formatUserList(awaitingMaintainers)} |\n`;
+                  body += `| 🕐&nbsp;Pending (Maintainer) | ${approvalManager.formatUserList(awaitingMaintainers)} |\n`;
                 }
               }
               return body;
-            }
-
-            // Helper function to update issue status and labels
-            async function updateIssueStatus(status) {
-              const labels = [];
-
-              switch (status) {
-                case '✅ Approved':
-                  labels.push('accepted');
-                  break;
-                case '❌ Rejected':
-                  labels.push('turned-down');
-                  break;
-                case '⏰ Timed Out':
-                  labels.push('timed-out');
-                  break;
-                default:
-                  labels.push('proposed');
-              }
-
-              // Update labels
-              await github.rest.issues.update({
-                owner: org,
-                repo,
-                issue_number: issueNumber,
-                labels: labels
-              });
             }
 
             // Handle label changes
@@ -116,137 +71,35 @@ jobs:
               const label = context.payload.label.name;
               if (label === 'timed-out') {
                 console.log('Timed-out label detected, updating status');
-                const statusBody = generateStatusBody('⏰ Timed Out', new Set(), new Set(), new Set(), [], []);
-
-                // Find and update the status comment
-                const comments = await github.paginate(github.rest.issues.listComments, {
-                  owner: org,
-                  repo,
-                  issue_number: issueNumber,
-                  per_page: 100
-                });
-
-                let statusComment = comments.find(c => c.body.startsWith('## Pipeline proposal approval status:'));
-                if (statusComment) {
-                  await github.rest.issues.updateComment({
-                    owner: org,
-                    repo,
-                    comment_id: statusComment.id,
-                    body: statusBody
-                  });
-                } else {
-                  await github.rest.issues.createComment({
-                    owner: org,
-                    repo,
-                    issue_number: issueNumber,
-                    body: statusBody
-                  });
-                }
+                const statusBody = generateStatusBody('⏰ Timed Out');
+                await approvalManager.updateStatusComment(statusBody);
                 return;
               }
             }
 
-            // -------------------------------------------------
-            // If this workflow was triggered by issue creation
-            // -------------------------------------------------
+            // Handle new issue creation
             if (context.eventName === 'issues' && context.payload.action === 'opened') {
-              const body = generateStatusBody('🕐 Pending', new Set(), new Set(), new Set(), coreTeamMembers, maintainerTeamMembers);
+              const body = generateStatusBody('🕐 Pending');
               console.log('Creating initial comment for review status');
-
-              await github.rest.issues.createComment({
-                owner: org,
-                repo,
-                issue_number: issueNumber,
-                body
-              });
-
-              // Set initial status to proposed
-              await updateIssueStatus('🕐 Pending');
+              await approvalManager.updateStatusComment(body);
+              await approvalManager.updateIssueStatus('🕐 Pending');
               return;
             }
 
-            // ---------------------------------------------------------------------
-            // Collect comments and compute votes (shared for comment & closed events)
-            // ---------------------------------------------------------------------
 
-            // Collect all comments on the issue
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: org,
-              repo,
-              issue_number: issueNumber,
-              per_page: 100
-            });
 
-            const coreApprovals = new Set();
-            const maintainerApprovals = new Set();
-            const rejections = new Set();
-
-            for (const comment of comments) {
-              const commenter = comment.user.login;
-              const isCoreMember = coreTeamMembers.includes(commenter);
-              const isMaintainer = maintainerTeamMembers.includes(commenter);
-
-              if (!isCoreMember && !isMaintainer) continue; // Only team members count
-
-              // Count approvals / rejections based on line starting with /approve or /reject
-              const lines = comment.body.split(/\r?\n/);
-              for (const rawLine of lines) {
-                const line = rawLine.trim();
-                if (/^\/approve\b/i.test(line)) {
-                  if (isCoreMember) {
-                    coreApprovals.add(commenter);
-                  } else if (isMaintainer) {
-                    maintainerApprovals.add(commenter);
-                  }
-                } else if (/^\/reject\b/i.test(line)) {
-                  rejections.add(commenter);
-                }
-              }
-            }
-
-            console.log(`Core approvals (${coreApprovals.size}):`, [...coreApprovals]);
-            console.log(`Maintainer approvals (${maintainerApprovals.size}):`, [...maintainerApprovals]);
-            console.log(`Rejections (${rejections.size}):`, [...rejections]);
-
-            const awaitingCore = coreTeamMembers.filter(u => !coreApprovals.has(u) && !rejections.has(u));
-            const awaitingMaintainers = maintainerTeamMembers.filter(u => !maintainerApprovals.has(u) && !rejections.has(u));
 
             // Determine status
             let status = '🕐 Pending';
 
-            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && rejections.size > 0) {
+            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0 || approvalManager.maintainerRejections.size > 0)) {
               status = '❌ Rejected';
-            } else if ((coreApprovals.size >= 2) || (coreApprovals.size >= 1 && maintainerApprovals.size >= 1)) {
+            } else if ((approvalManager.coreApprovals.size >= 2) || (approvalManager.coreApprovals.size >= 1 && approvalManager.maintainerApprovals.size >= 1)) {
               status = '✅ Approved';
             }
 
-            const statusBody = generateStatusBody(status, coreApprovals, maintainerApprovals, rejections, awaitingCore, awaitingMaintainers);
+            const statusBody = generateStatusBody(status);
             console.log('New status body to post:\n', statusBody);
 
-            // Try to locate the existing status comment (starts with our header)
-            let statusComment = comments.find(c => c.body.startsWith('## Pipeline proposal approval status:'));
-
-            if (statusComment) {
-              if (statusComment.body.trim() === statusBody.trim()) {
-                console.log('Status comment already up to date - no update required.');
-              } else {
-                console.log('Updating existing status comment.');
-                await github.rest.issues.updateComment({
-                  owner: org,
-                  repo,
-                  comment_id: statusComment.id,
-                  body: statusBody
-                });
-              }
-            } else {
-              // Fallback: create a new status comment if missing (shouldn't normally happen)
-              await github.rest.issues.createComment({
-                owner: org,
-                repo,
-                issue_number: issueNumber,
-                body: statusBody
-              });
-            }
-
-            // Update issue status and labels
-            await updateIssueStatus(status);
+            await approvalManager.updateStatusComment(statusBody);
+            await approvalManager.updateIssueStatus(status);

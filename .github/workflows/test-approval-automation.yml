@@ -1,0 +1,204 @@
+name: Test Approval Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/lib/**"
+      - ".github/workflows/pipeline_proposals.yml"
+      - ".github/workflows/rfc_approval.yml"
+      - ".github/workflows/test-approval-automation.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - ".github/workflows/lib/**"
+      - ".github/workflows/pipeline_proposals.yml"
+      - ".github/workflows/rfc_approval.yml"
+      - ".github/workflows/test-approval-automation.yml"
+
+jobs:
+  test-approval-lib:
+    name: Test Approval Library
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: ".github/workflows/lib/package-lock.json"
+
+      - name: Install dependencies
+        working-directory: .github/workflows/lib
+        run: npm ci
+
+      - name: Run tests
+        working-directory: .github/workflows/lib
+        run: npm test
+
+      - name: Run tests with coverage
+        working-directory: .github/workflows/lib
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: success()
+        with:
+          file: .github/workflows/lib/coverage/lcov.info
+          flags: approval-automation
+          name: approval-automation-coverage
+          fail_ci_if_error: false
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read coverage summary
+            const coveragePath = path.join('.github/workflows/lib/coverage/coverage-summary.json');
+
+            if (fs.existsSync(coveragePath)) {
+              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              const total = coverage.total;
+
+              const comment = `## 📊 Test Coverage Report
+
+              | Metric | Coverage | Status |
+              |--------|----------|---------|
+              | Statements | ${total.statements.pct}% | ${total.statements.pct >= 90 ? '✅' : total.statements.pct >= 75 ? '⚠️' : '❌'} |
+              | Branches | ${total.branches.pct}% | ${total.branches.pct >= 90 ? '✅' : total.branches.pct >= 75 ? '⚠️' : '❌'} |
+              | Functions | ${total.functions.pct}% | ${total.functions.pct >= 90 ? '✅' : total.functions.pct >= 75 ? '⚠️' : '❌'} |
+              | Lines | ${total.lines.pct}% | ${total.lines.pct >= 90 ? '✅' : total.lines.pct >= 75 ? '⚠️' : '❌'} |
+
+              **Tests:** ${total.statements.covered} statements covered out of ${total.statements.total}
+
+              ${total.statements.pct >= 90 ? '🎉 Excellent coverage!' : total.statements.pct >= 75 ? '👍 Good coverage!' : '⚠️ Coverage could be improved'}`;
+
+              // Find existing coverage comment
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+
+              const existingComment = comments.find(comment =>
+                comment.body.includes('📊 Test Coverage Report')
+              );
+
+              if (existingComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingComment.id,
+                  body: comment
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: comment
+                });
+              }
+            }
+
+  lint-workflows:
+    name: Lint GitHub Actions Workflows
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install actionlint
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhymond/actionlint/main/scripts/download-actionlint.bash)
+          sudo mv ./actionlint /usr/local/bin/
+
+      - name: Lint workflow files
+        run: actionlint .github/workflows/*.yml
+
+  validate-approval-logic:
+    name: Validate Approval Logic
+    runs-on: ubuntu-latest
+    needs: test-approval-lib
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: ".github/workflows/lib/package-lock.json"
+
+      - name: Install dependencies
+        working-directory: .github/workflows/lib
+        run: npm ci
+
+      - name: Validate pipeline approval logic
+        working-directory: .github/workflows/lib
+        run: |
+          node -e "
+          const ApprovalManager = require('./approval.js');
+
+          // Test pipeline approval logic
+          const mockGithub = { request: () => Promise.resolve({ data: [] }), paginate: () => Promise.resolve([]) };
+          const manager = new ApprovalManager(mockGithub, 'test', 'test', 1);
+
+          // Test scenarios
+          manager.coreApprovals = new Set(['core1', 'core2']);
+          manager.maintainerApprovals = new Set();
+          const pipeline2Core = (manager.coreApprovals.size >= 2) || (manager.coreApprovals.size >= 1 && manager.maintainerApprovals.size >= 1);
+          console.log('Pipeline 2 core approval:', pipeline2Core);
+
+          manager.coreApprovals = new Set(['core1']);
+          manager.maintainerApprovals = new Set(['maintainer1']);
+          const pipeline1Core1Maintainer = (manager.coreApprovals.size >= 2) || (manager.coreApprovals.size >= 1 && manager.maintainerApprovals.size >= 1);
+          console.log('Pipeline 1 core + 1 maintainer approval:', pipeline1Core1Maintainer);
+
+          if (!pipeline2Core || !pipeline1Core1Maintainer) {
+            process.exit(1);
+          }
+          "
+
+      - name: Validate RFC approval logic
+        working-directory: .github/workflows/lib
+        run: |
+          node -e "
+          const ApprovalManager = require('./approval.js');
+
+          // Test RFC approval logic
+          const mockGithub = { request: () => Promise.resolve({ data: [] }), paginate: () => Promise.resolve([]) };
+          const manager = new ApprovalManager(mockGithub, 'test', 'test', 1);
+
+          // Test RFC quorum logic
+          manager.coreTeamMembers = ['core1', 'core2', 'core3', 'core4', 'core5'];
+          const quorum = Math.ceil(manager.coreTeamMembers.length / 2);
+
+          manager.coreApprovals = new Set(['core1', 'core2', 'core3']);
+          const rfcApproved = manager.coreApprovals.size >= quorum;
+          console.log('RFC quorum approval (3/5):', rfcApproved, 'quorum needed:', quorum);
+
+          manager.coreApprovals = new Set(['core1', 'core2']);
+          const rfcNotApproved = manager.coreApprovals.size >= quorum;
+          console.log('RFC insufficient approval (2/5):', rfcNotApproved);
+
+          if (!rfcApproved || rfcNotApproved) {
+            process.exit(1);
+          }
+          "

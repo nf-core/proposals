@@ -2,7 +2,7 @@ name: RFC approval automation
 
 on:
   issues:
-    types: [opened, closed]
+    types: [opened, closed, labeled, unlabeled]
   issue_comment:
     types: [created, edited]
 
@@ -18,9 +18,14 @@ jobs:
         with:
           github-token: ${{ secrets.nf_core_bot_auth_token }}
           script: |
+            const ApprovalManager = require('./.github/workflows/lib/approval.js');
+
             const issueNumber = context.issue.number;
             const org = context.repo.owner;
             const repo = context.repo.repo;
+
+            // Initialize approval manager
+            const approvalManager = await new ApprovalManager(github, org, repo, issueNumber).initialize();
 
             // Ignore comments on closed issues
             if (context.eventName === 'issue_comment' && context.payload.issue.state === 'closed') {
@@ -28,139 +33,62 @@ jobs:
               return;
             }
 
-            // ---------------------------------------------
-            // Fetch members of the core team
-            // ---------------------------------------------
-            async function getTeamMembers() {
-              try {
-                const res = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
-                  org,
-                  team_slug: 'core',
-                  per_page: 100
-                });
-                console.log(`Fetched ${res.data.length} core team members.`);
-                return res.data.map(m => m.login);
-              } catch (err) {
-                console.error('Failed to fetch core team members:', err);
-                throw err;
-              }
-            }
-
-            const teamMembers = await getTeamMembers();
-            console.log('Core team members:', teamMembers);
-            const quorum = Math.ceil(teamMembers.length / 2);
+            const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2);
             console.log(`Quorum set to ${quorum}.`);
 
-            // Helper for list formatting and complete status body
-            function formatUserList(users) {
-              return users.length ? users.map(u => `[@${u}](https://github.com/${u})`).join(', ') : '-';
-            }
-
-            function generateStatusBody(status, approvalsSet, rejectionsSet, awaitingArr) {
-              const approvers = [...approvalsSet];
-              const rejecters = [...rejectionsSet];
-              const awaiting = awaitingArr;
-              let body = `## RFC approval status: ${status}\n\nRFC has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\n`;
+            function generateStatusBody(status) {
+              const approvers = [...approvalManager.coreApprovals];
+              const rejecters = [...approvalManager.coreRejections];
+              const awaiting = approvalManager.awaitingCore;
+              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @core-team quorum.\n\n`;
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
                 body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
-                  body += `| ✅&nbsp;Approved | ${formatUserList(approvers)} |\n`;
+                  body += `| ✅&nbsp;Approved | ${approvalManager.formatUserList(approvers)} |\n`;
                 }
                 if (rejecters.length > 0) {
-                  body += `| ❌&nbsp;Rejected | ${formatUserList(rejecters)} |\n`;
+                  body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
                 }
                 if (awaiting.length > 0) {
-                  body += `| 🕐&nbsp;Pending | ${formatUserList(awaiting)} |\n`;
+                  body += `| 🕐&nbsp;Pending | ${approvalManager.formatUserList(awaiting)} |\n`;
                 }
               }
               return body;
             }
 
-            // -------------------------------------------------
-            // If this workflow was triggered by issue creation
-            // -------------------------------------------------
-            if (context.eventName === 'issues' && context.payload.action === 'opened') {
-              const body = generateStatusBody('🕐 Pending', new Set(), new Set(), teamMembers);
-              console.log('Creating initial comment for review status');
-
-              await github.rest.issues.createComment({
-                owner: org,
-                repo,
-                issue_number: issueNumber,
-                body
-              });
-              return; // Nothing more to do for newly-opened issues
-            }
-
-            // ---------------------------------------------------------------------
-            // Collect comments and compute votes (shared for comment & closed events)
-            // ---------------------------------------------------------------------
-
-            // Collect all comments on the issue
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: org,
-              repo,
-              issue_number: issueNumber,
-              per_page: 100
-            });
-
-            const approvals = new Set();
-            const rejections = new Set();
-
-            for (const comment of comments) {
-              const commenter = comment.user.login;
-              if (!teamMembers.includes(commenter)) continue; // Only core team members count
-
-              // Count approvals / rejections based on line starting with /approve or /reject
-              const lines = comment.body.split(/\r?\n/);
-              for (const rawLine of lines) {
-                const line = rawLine.trim();
-                if (/^\/approve\b/i.test(line)) {
-                  approvals.add(commenter);
-                } else if (/^\/reject\b/i.test(line)) {
-                  rejections.add(commenter);
-                }
+            // Handle label changes
+            if (context.eventName === 'issues' && (context.payload.action === 'labeled' || context.payload.action === 'unlabeled')) {
+              const label = context.payload.label.name;
+              if (label === 'timed-out') {
+                console.log('Timed-out label detected, updating status');
+                const statusBody = generateStatusBody('⏰ Timed Out');
+                await approvalManager.updateStatusComment(statusBody);
+                return;
               }
             }
 
-            console.log(`Approvals (${approvals.size}):`, [...approvals]);
-            console.log(`Rejections (${rejections.size}):`, [...rejections]);
+            // Handle new issue creation
+            if (context.eventName === 'issues' && context.payload.action === 'opened') {
+              const body = generateStatusBody('🕐 Pending');
+              console.log('Creating initial comment for review status');
+              await approvalManager.updateStatusComment(body);
+              await approvalManager.updateIssueStatus('🕐 Pending');
+              return;
+            }
 
-            const awaiting = teamMembers.filter(u => !approvals.has(u) && !rejections.has(u));
+
 
             // Determine status
             let status = '🕐 Pending';
 
-            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && rejections.size > 0) {
+            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0)) {
               status = '❌ Rejected';
-            } else if (approvals.size >= quorum && rejections.size === 0) {
+            } else if (approvalManager.coreApprovals.size >= quorum) {
               status = '✅ Approved';
             }
 
-            const statusBody = generateStatusBody(status, approvals, rejections, awaiting);
+            const statusBody = generateStatusBody(status);
             console.log('New status body to post:\n', statusBody);
 
-            // Try to locate the existing status comment (starts with our header)
-            let statusComment = comments.find(c => c.body.startsWith('## RFC approval status:'));
-
-            if (statusComment) {
-              if (statusComment.body.trim() === statusBody.trim()) {
-                console.log('Status comment already up to date - no update required.');
-              } else {
-                console.log('Updating existing status comment.');
-                await github.rest.issues.updateComment({
-                  owner: org,
-                  repo,
-                  comment_id: statusComment.id,
-                  body: statusBody
-                });
-              }
-            } else {
-              // Fallback: create a new status comment if missing (shouldn't normally happen)
-              await github.rest.issues.createComment({
-                owner: org,
-                repo,
-                issue_number: issueNumber,
-                body: statusBody
-              });
-            }
+            await approvalManager.updateStatusComment(statusBody);
+            await approvalManager.updateIssueStatus(status);
