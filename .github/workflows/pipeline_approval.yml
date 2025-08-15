@@ -9,7 +9,7 @@ on:
 jobs:
   pipeline_approval:
     # Only run for pipeline proposal issues
-    if: startsWith(github.event.issue.title, 'New Pipeline')
+    if: startsWith(github.event.issue.title, 'New pipeline')
     runs-on: ubuntu-latest
 
     steps:
