@@ -63,7 +63,7 @@ jobs:
 
             const teamMembers = await getTeamMembers();
             console.log('Core and Maintainers team members:', teamMembers);
-            const quorum = Math.ceil(teamMembers.length / 2);
+            const quorum = 2;
             console.log(`Quorum set to ${quorum}.`);
 
             // Helper for list formatting and complete status body
@@ -75,7 +75,7 @@ jobs:
               const approvers = [...approvalsSet];
               const rejecters = [...rejectionsSet];
               const awaiting = awaitingArr;
-              let body = `## Pipeline approval status: ${status}\n\nPipeline has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\n`;
+              let body = `## Pipeline approval status: ${status}\n\nPipeline has approvals from ${approvalsSet.size}/${quorum} required @core-team and @maintainers-team quorum.\n\n`;
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
                 body += `|Review&nbsp;Status|Core and Maintainer Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
