@@ -29,25 +29,40 @@ jobs:
             }
 
             // ---------------------------------------------
-            // Fetch members of the core team
+            // Fetch members of the core team and maintainers team
             // ---------------------------------------------
             async function getTeamMembers() {
               try {
-                const res = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
+                // Fetch core team members
+                const coreRes = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
                   org,
                   team_slug: 'core',
                   per_page: 100
                 });
-                console.log(`Fetched ${res.data.length} core team members.`);
-                return res.data.map(m => m.login);
+                console.log(`Fetched ${coreRes.data.length} core team members.`);
+
+                // Fetch maintainers team members
+                const maintainersRes = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
+                  org,
+                  team_slug: 'maintainers',
+                  per_page: 100
+                });
+                console.log(`Fetched ${maintainersRes.data.length} maintainers team members.`);
+
+                // Combine both teams and remove duplicates
+                const allMembers = [...coreRes.data, ...maintainersRes.data];
+                const uniqueMembers = Array.from(new Set(allMembers.map(m => m.login)));
+                console.log(`Total unique team members: ${uniqueMembers.length}`);
+
+                return uniqueMembers;
               } catch (err) {
-                console.error('Failed to fetch core team members:', err);
+                console.error('Failed to fetch team members:', err);
                 throw err;
               }
             }
 
             const teamMembers = await getTeamMembers();
-            console.log('Core team members:', teamMembers);
+            console.log('Core and Maintainers team members:', teamMembers);
             const quorum = Math.ceil(teamMembers.length / 2);
             console.log(`Quorum set to ${quorum}.`);
 
@@ -62,7 +77,7 @@ jobs:
               const awaiting = awaitingArr;
               let body = `## Pipeline approval status: ${status}\n\nPipeline has approvals from ${approvalsSet.size}/${quorum} required @core-team quorum.\n\n`;
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
-                body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
+                body += `|Review&nbsp;Status|Core and Maintainer Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
                   body += `| ✅&nbsp;Approved | ${formatUserList(approvers)} |\n`;
                 }
