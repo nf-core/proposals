@@ -75,7 +75,7 @@ jobs:
               const approvers = [...approvalsSet];
               const rejecters = [...rejectionsSet];
               const awaiting = awaitingArr;
-              let body = `## Pipeline approval status: ${status}\n\nPipeline has approvals from ${approvalsSet.size}/${quorum} required @core-team and @maintainers-team quorum.\n\n`;
+              let body = `## Pipeline approval status: ${status}\n\nPipeline has approvals from ${approvalsSet.size}/${quorum} required @nf-core/core and @nf-core/maintainers quorum.\n\n`;
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
                 body += `|Review&nbsp;Status|Core and Maintainer Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
