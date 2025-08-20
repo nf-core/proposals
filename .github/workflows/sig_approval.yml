@@ -1,4 +1,4 @@
-name: RFC approval automation
+name: SIG approval automation
 
 on:
   issues:
@@ -7,13 +7,13 @@ on:
     types: [created, edited]
 
 jobs:
-  rfc_approval:
-    # Only run for RFC proposal issues
-    if: startsWith(github.event.issue.title, 'New RFC')
+  sig_approval:
+    # Only run for SIG proposal issues
+    if: startsWith(github.event.issue.title, 'New special interest group')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Handle RFC approval logic
+      - name: Handle SIG approval logic
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.nf_core_bot_auth_token }}
@@ -33,14 +33,17 @@ jobs:
               return;
             }
 
-            const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2);
-            console.log(`Quorum set to ${quorum}.`);
+            const requiredCoreApprovals = 2;
+            console.log(`Required core team approvals: ${requiredCoreApprovals}`);
 
             function generateStatusBody(status) {
               const approvers = [...approvalManager.coreApprovals];
               const rejecters = [...approvalManager.coreRejections];
               const awaiting = approvalManager.awaitingCore;
-              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @nf-core/core quorum.\n\n`;
+
+              let body = `## Approval status: ${status}\n\nSIG proposal requires approvals from ${requiredCoreApprovals} core team members.\n\n`;
+              body += `Current approvals: ${approvalManager.coreApprovals.size}/${requiredCoreApprovals}\n\n`;
+
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
                 body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
@@ -76,14 +79,12 @@ jobs:
               return;
             }
 
-
-
             // Determine status
             let status = '🕐 Pending';
 
             if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0)) {
               status = '❌ Rejected';
-            } else if (approvalManager.coreApprovals.size >= quorum) {
+            } else if (approvalManager.coreApprovals.size >= requiredCoreApprovals) {
               status = '✅ Approved';
             }
 

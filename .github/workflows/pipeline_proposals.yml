@@ -1,4 +1,4 @@
-name: RFC approval automation
+name: Pipeline proposal approval automation
 
 on:
   issues:
@@ -7,13 +7,13 @@ on:
     types: [created, edited]
 
 jobs:
-  rfc_approval:
-    # Only run for RFC proposal issues
-    if: startsWith(github.event.issue.title, 'New RFC')
+  pipeline_approval:
+    # Only run for pipeline proposal issues
+    if: startsWith(github.event.issue.title, 'New pipeline')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Handle RFC approval logic
+      - name: Handle pipeline proposal approval logic
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.nf_core_bot_auth_token }}
@@ -33,24 +33,34 @@ jobs:
               return;
             }
 
-            const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2);
-            console.log(`Quorum set to ${quorum}.`);
 
             function generateStatusBody(status) {
-              const approvers = [...approvalManager.coreApprovals];
-              const rejecters = [...approvalManager.coreRejections];
-              const awaiting = approvalManager.awaitingCore;
-              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @nf-core/core quorum.\n\n`;
-              if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
-                body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
-                if (approvers.length > 0) {
-                  body += `| ✅&nbsp;Approved | ${approvalManager.formatUserList(approvers)} |\n`;
+
+              const coreApprovers = [...approvalManager.coreApprovals];
+              const maintainerApprovers = [...approvalManager.maintainerApprovals];
+              const rejecters = [...approvalManager.coreRejections, ...approvalManager.maintainerRejections];
+              const awaitingCore = [...approvalManager.awaitingCore];
+              const awaitingMaintainers = [...approvalManager.awaitingMaintainers];
+
+              let body = `## Approval status: ${status}\n\n`;
+              body += `Required approvals: Either 2 core team members OR 1 core team member + 1 maintainer\n\n`;
+
+              if (coreApprovers.length > 0 || maintainerApprovers.length > 0 || rejecters.length > 0 || awaitingCore.length > 0 || awaitingMaintainers.length > 0) {
+                body += `|Review&nbsp;Status|Team members|\n|--|--|\n`;
+                if (coreApprovers.length > 0) {
+                  body += `| ✅&nbsp;Approved (Core) | ${approvalManager.formatUserList(coreApprovers)} |\n`;
+                }
+                if (maintainerApprovers.length > 0) {
+                  body += `| ✅&nbsp;Approved (Maintainer) | ${approvalManager.formatUserList(maintainerApprovers)} |\n`;
                 }
                 if (rejecters.length > 0) {
                   body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
                 }
-                if (awaiting.length > 0) {
-                  body += `| 🕐&nbsp;Pending | ${approvalManager.formatUserList(awaiting)} |\n`;
+                if (awaitingCore.length > 0) {
+                  body += `| 🕐&nbsp;Pending (Core) | ${approvalManager.formatUserList(awaitingCore)} |\n`;
+                }
+                if (awaitingMaintainers.length > 0) {
+                  body += `| 🕐&nbsp;Pending (Maintainer) | ${approvalManager.formatUserList(awaitingMaintainers)} |\n`;
                 }
               }
               return body;
@@ -78,12 +88,13 @@ jobs:
 
 
 
+
             // Determine status
             let status = '🕐 Pending';
 
-            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0)) {
+            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0 || approvalManager.maintainerRejections.size > 0)) {
               status = '❌ Rejected';
-            } else if (approvalManager.coreApprovals.size >= quorum) {
+            } else if ((approvalManager.coreApprovals.size >= 2) || (approvalManager.coreApprovals.size >= 1 && approvalManager.maintainerApprovals.size >= 1)) {
               status = '✅ Approved';
             }
 
