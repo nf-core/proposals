@@ -40,7 +40,7 @@ jobs:
               const approvers = [...approvalManager.coreApprovals];
               const rejecters = [...approvalManager.coreRejections];
               const awaiting = approvalManager.awaitingCore;
-              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @core-team quorum.\n\n`;
+              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @nf-core/core quorum.\n\n`;
               if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
                 body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
                 if (approvers.length > 0) {
