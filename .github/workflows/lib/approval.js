@@ -69,8 +69,8 @@ class ApprovalManager {
     // Filter out existing status labels
     const statusLabels = ["accepted", "turned-down", "timed-out", "proposed"];
     const existingLabels = issue.data.labels
-      .map(label => typeof label === 'string' ? label : label.name)
-      .filter(label => !statusLabels.includes(label));
+      .map((label) => (typeof label === "string" ? label : label.name))
+      .filter((label) => !statusLabels.includes(label));
 
     // Determine new status label
     let newStatusLabel;
@@ -171,7 +171,7 @@ class ApprovalManager {
     // Update awaiting lists
     this.awaitingCore = this.coreTeamMembers.filter((u) => !this.coreApprovals.has(u) && !this.coreRejections.has(u));
     this.awaitingMaintainers = this.maintainerTeamMembers.filter(
-      (u) => !this.maintainerApprovals.has(u) && !this.maintainerRejections.has(u),
+      (u) => !this.maintainerApprovals.has(u) && !this.maintainerRejections.has(u)
     );
   }
 }
