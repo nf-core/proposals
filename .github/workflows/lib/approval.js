@@ -171,7 +171,7 @@ class ApprovalManager {
     // Update awaiting lists
     this.awaitingCore = this.coreTeamMembers.filter((u) => !this.coreApprovals.has(u) && !this.coreRejections.has(u));
     this.awaitingMaintainers = this.maintainerTeamMembers.filter(
-      (u) => !this.maintainerApprovals.has(u) && !this.maintainerRejections.has(u)
+      (u) => !this.maintainerApprovals.has(u) && !this.maintainerRejections.has(u),
     );
   }
 }
