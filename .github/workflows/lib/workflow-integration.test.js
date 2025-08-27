@@ -7,6 +7,7 @@ const mockGithub = {
   rest: {
     issues: {
       listComments: jest.fn(),
+      get: jest.fn(),
       update: jest.fn(),
       updateComment: jest.fn(),
       createComment: jest.fn(),
@@ -37,6 +38,13 @@ describe("Workflow Integration Tests", () => {
 
       // Mock empty comments initially
       mockGithub.paginate.mockResolvedValue([]);
+
+      // Mock issues.get to return an issue with no existing labels
+      mockGithub.rest.issues.get.mockResolvedValue({
+        data: {
+          labels: []
+        }
+      });
 
       approvalManager = await new ApprovalManager(mockGithub, mockOrg, mockRepo, mockIssueNumber).initialize();
     });
@@ -184,6 +192,13 @@ describe("Workflow Integration Tests", () => {
 
       mockGithub.paginate.mockResolvedValue([]);
 
+      // Mock issues.get to return an issue with no existing labels
+      mockGithub.rest.issues.get.mockResolvedValue({
+        data: {
+          labels: []
+        }
+      });
+
       approvalManager = await new ApprovalManager(mockGithub, mockOrg, mockRepo, mockIssueNumber).initialize();
     });
 
@@ -327,6 +342,13 @@ describe("Workflow Integration Tests", () => {
       mockGithub.request.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({ data: [] });
 
       mockGithub.paginate.mockResolvedValue([]);
+
+      // Mock issues.get to return an issue with no existing labels
+      mockGithub.rest.issues.get.mockResolvedValue({
+        data: {
+          labels: []
+        }
+      });
 
       approvalManager = await new ApprovalManager(mockGithub, "org", "repo", 123).initialize();
     });
