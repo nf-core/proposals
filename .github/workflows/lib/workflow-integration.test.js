@@ -42,8 +42,8 @@ describe("Workflow Integration Tests", () => {
       // Mock issues.get to return an issue with no existing labels
       mockGithub.rest.issues.get.mockResolvedValue({
         data: {
-          labels: []
-        }
+          labels: [],
+        },
       });
 
       approvalManager = await new ApprovalManager(mockGithub, mockOrg, mockRepo, mockIssueNumber).initialize();
@@ -195,8 +195,8 @@ describe("Workflow Integration Tests", () => {
       // Mock issues.get to return an issue with no existing labels
       mockGithub.rest.issues.get.mockResolvedValue({
         data: {
-          labels: []
-        }
+          labels: [],
+        },
       });
 
       approvalManager = await new ApprovalManager(mockGithub, mockOrg, mockRepo, mockIssueNumber).initialize();
@@ -346,8 +346,8 @@ describe("Workflow Integration Tests", () => {
       // Mock issues.get to return an issue with no existing labels
       mockGithub.rest.issues.get.mockResolvedValue({
         data: {
-          labels: []
-        }
+          labels: [],
+        },
       });
 
       approvalManager = await new ApprovalManager(mockGithub, "org", "repo", 123).initialize();

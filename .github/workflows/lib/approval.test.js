@@ -116,9 +116,9 @@ describe("ApprovalManager", () => {
           labels: [
             { name: "bug" },
             { name: "proposed" }, // This should be replaced
-            { name: "enhancement" }
-          ]
-        }
+            { name: "enhancement" },
+          ],
+        },
       });
     });
 
@@ -197,9 +197,9 @@ describe("ApprovalManager", () => {
           labels: [
             { name: "documentation" },
             { name: "accepted" }, // This should be replaced with turned-down
-            { name: "priority-high" }
-          ]
-        }
+            { name: "priority-high" },
+          ],
+        },
       });
 
       await approvalManager.updateIssueStatus("❌ Rejected");
