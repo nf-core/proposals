@@ -7,6 +7,7 @@ const mockGithub = {
   rest: {
     issues: {
       listComments: jest.fn(),
+      get: jest.fn(),
       update: jest.fn(),
       updateComment: jest.fn(),
       createComment: jest.fn(),
@@ -108,47 +109,106 @@ describe("ApprovalManager", () => {
   });
 
   describe("updateIssueStatus", () => {
+    beforeEach(() => {
+      // Mock the get method to return an issue with existing labels
+      mockGithub.rest.issues.get.mockResolvedValue({
+        data: {
+          labels: [
+            { name: "bug" },
+            { name: "proposed" }, // This should be replaced
+            { name: "enhancement" },
+          ],
+        },
+      });
+    });
+
     it("should add accepted label for approved status", async () => {
       await approvalManager.updateIssueStatus("✅ Approved");
+
+      expect(mockGithub.rest.issues.get).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+      });
 
       expect(mockGithub.rest.issues.update).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
         issue_number: mockIssueNumber,
-        labels: ["accepted"],
+        labels: ["bug", "enhancement", "accepted"],
       });
     });
 
     it("should add turned-down label for rejected status", async () => {
       await approvalManager.updateIssueStatus("❌ Rejected");
 
+      expect(mockGithub.rest.issues.get).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+      });
+
       expect(mockGithub.rest.issues.update).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
         issue_number: mockIssueNumber,
-        labels: ["turned-down"],
+        labels: ["bug", "enhancement", "turned-down"],
       });
     });
 
     it("should add timed-out label for timed out status", async () => {
       await approvalManager.updateIssueStatus("⏰ Timed Out");
 
+      expect(mockGithub.rest.issues.get).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+      });
+
       expect(mockGithub.rest.issues.update).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
         issue_number: mockIssueNumber,
-        labels: ["timed-out"],
+        labels: ["bug", "enhancement", "timed-out"],
       });
     });
 
     it("should add proposed label for pending status", async () => {
       await approvalManager.updateIssueStatus("🕐 Pending");
 
+      expect(mockGithub.rest.issues.get).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+      });
+
       expect(mockGithub.rest.issues.update).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
         issue_number: mockIssueNumber,
-        labels: ["proposed"],
+        labels: ["bug", "enhancement", "proposed"],
+      });
+    });
+
+    it("should preserve existing labels when updating status", async () => {
+      // Set up a different set of existing labels
+      mockGithub.rest.issues.get.mockResolvedValueOnce({
+        data: {
+          labels: [
+            { name: "documentation" },
+            { name: "accepted" }, // This should be replaced with turned-down
+            { name: "priority-high" },
+          ],
+        },
+      });
+
+      await approvalManager.updateIssueStatus("❌ Rejected");
+
+      expect(mockGithub.rest.issues.update).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+        labels: ["documentation", "priority-high", "turned-down"],
       });
     });
   });

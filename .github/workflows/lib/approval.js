@@ -59,28 +59,44 @@ class ApprovalManager {
 
   // Helper to update issue status and labels
   async updateIssueStatus(status) {
-    const labels = [];
+    // Get current issue to preserve existing labels
+    const issue = await this.github.rest.issues.get({
+      owner: this.org,
+      repo: this.repo,
+      issue_number: this.issueNumber,
+    });
 
+    // Filter out existing status labels
+    const statusLabels = ["accepted", "turned-down", "timed-out", "proposed"];
+    const existingLabels = issue.data.labels
+      .map((label) => (typeof label === "string" ? label : label.name))
+      .filter((label) => !statusLabels.includes(label));
+
+    // Determine new status label
+    let newStatusLabel;
     switch (status) {
       case "✅ Approved":
-        labels.push("accepted");
+        newStatusLabel = "accepted";
         break;
       case "❌ Rejected":
-        labels.push("turned-down");
+        newStatusLabel = "turned-down";
         break;
       case "⏰ Timed Out":
-        labels.push("timed-out");
+        newStatusLabel = "timed-out";
         break;
       default:
-        labels.push("proposed");
+        newStatusLabel = "proposed";
     }
+
+    // Combine existing non-status labels with new status label
+    const updatedLabels = [...existingLabels, newStatusLabel];
 
     // Update labels
     await this.github.rest.issues.update({
       owner: this.org,
       repo: this.repo,
       issue_number: this.issueNumber,
-      labels: labels,
+      labels: updatedLabels,
     });
   }
 
