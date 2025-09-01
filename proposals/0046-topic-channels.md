@@ -75,13 +75,13 @@ So
 
 becomes:
 
-```groovy
+````groovy
   assert snapshot(
       process.out.bam,
       ['versions', process.out[1]]
   ).match()```
 
-```
+````
 
 Which in the snapshot translate to:
 
