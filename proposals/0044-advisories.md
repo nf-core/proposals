@@ -1,6 +1,6 @@
 - Start Date: 2025-06-10
 - Reference Issues: https://github.com/nf-core/proposals/issues/44
-- Implementation PR: https://github.com/nf-core/website/pull/3366
+- Implementation PR: https://github.com/nf-core/website/pull/3441
 
 # Summary
 
