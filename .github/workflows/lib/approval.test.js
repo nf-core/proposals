@@ -55,7 +55,7 @@ describe("ApprovalManager", () => {
 
     it("should format multiple users correctly", () => {
       expect(approvalManager.formatUserList(["user1", "user2"])).toBe(
-        "[@user1](https://github.com/user1), [@user2](https://github.com/user2)"
+        "[@user1](https://github.com/user1), [@user2](https://github.com/user2)",
       );
     });
   });
