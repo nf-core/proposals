@@ -92,13 +92,21 @@ jobs:
 
 
 
-            // Determine status
-            let status = '🕐 Pending';
 
-            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0 || approvalManager.maintainerRejections.size > 0)) {
+            // Determine status
+            let status;
+
+            // If rejection threshold is reached, set status to Rejected
+            if (
+              (approvalManager.coreRejections.size >= 2) ||
+              (approvalManager.coreRejections.size >= 1 && approvalManager.maintainerRejections.size >= 1) ||
+              (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0 || approvalManager.maintainerRejections.size > 0))
+            ) {
               status = '❌ Rejected';
             } else if ((approvalManager.coreApprovals.size >= 2) || (approvalManager.coreApprovals.size >= 1 && approvalManager.maintainerApprovals.size >= 1)) {
               status = '✅ Approved';
+            } else {
+              status = '🕐 Pending';
             }
 
             const statusBody = generateStatusBody(status);
