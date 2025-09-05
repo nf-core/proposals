@@ -56,7 +56,7 @@ jobs:
                 if (maintainerApprovers.length > 0) {
                   body += `| ✅&nbsp;Approved (Maintainer) | ${approvalManager.formatUserList(maintainerApprovers)} |\n`;
                 }
-                if (rejecters.length > 0) {
+                if (rejecters.length > 1 && coreApprovers.length === 0 && maintainerApprovers.length === 0) {
                   body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
                 }
                 if (awaitingCore.length > 0) {
