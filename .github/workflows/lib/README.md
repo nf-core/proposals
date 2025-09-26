@@ -46,7 +46,7 @@ The `ApprovalManager` class handles:
 
 ## CLI Scripts
 
-Each proposal type has its own Click-based CLI script that can be run directly:
+Each proposal type has its own rich-click-based CLI script that can be run directly with beautiful formatting:
 
 ### SIG Approval Script
 
