@@ -20,19 +20,19 @@ Derived from the proposal here: https://github.com/nf-core/proposals/issues/61, 
 
 with particularly the first point ending up putting more work on community coordinators/managers.
 
-Generally there was an agreement that LLMs are here to stay, and we cannot avoid them. 
+Generally there was an agreement that LLMs are here to stay, and we cannot avoid them.
 
 But there was a feeling we need to at least make a statement on our stance on them and possibly a policy document.
 
 # Goals
 
-- Make clear when LLM code or related things are (generally) acceptable  within nf-core
+- Make clear when LLM code or related things are (generally) acceptable within nf-core
 - Make clear what the consequences of abusing these guidelines are
 
 # Non-Goals
 
 - To enforce AI usage on the community
-- To ban AI usage 
+- To ban AI usage
 - To implement mechanisms for the use of AI
 
 # Detailed Design
