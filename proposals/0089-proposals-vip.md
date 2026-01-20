@@ -30,7 +30,6 @@ But there was a feeling we need to at least make a statement on our stance on th
 - Promote best development practices and enforce recommended guidelines for popular pipelines.
 - Provide a model for other pipelines to align with and adopt these practices.
 
-
 ### Non-Goals
 
 - The tier system is not meant to devalue or discourage work on less widely adopted pipelines.
@@ -42,7 +41,6 @@ But there was a feeling we need to at least make a statement on our stance on th
 ## Naming
 
 The name of the tier could be **VIP (Very Important Pipelines)**
-
 
 ## Selection
 
@@ -107,7 +105,6 @@ None noted.
 
 - [x] Update pipelines documentation: https://github.com/nf-core/website/pull/3718
 - [ ] Made a blog post to announce the VIP tier
-
 
 # Unresolved Questions
 
