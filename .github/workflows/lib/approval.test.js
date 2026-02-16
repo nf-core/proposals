@@ -520,22 +520,72 @@ describe("ApprovalManager", () => {
       expect(Math.ceil(7 / 2)).toBe(4); // 7 members need 4 approvals
     });
 
-    it("should ignore maintainer approvals for RFC (core team only)", () => {
+    it("should approve RFC with combined core + maintainer votes reaching quorum", () => {
+      const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2); // 3 for 5 members
+
       approvalManager.comments = [
         { user: { login: "core1" }, body: "/approve" },
         { user: { login: "core2" }, body: "/approve" },
         { user: { login: "maintainer1" }, body: "/approve" },
-        { user: { login: "maintainer2" }, body: "/approve" },
       ];
 
       approvalManager.processComments();
 
       expect(approvalManager.coreApprovals.size).toBe(2);
-      expect(approvalManager.maintainerApprovals.size).toBe(2);
+      expect(approvalManager.maintainerApprovals.size).toBe(1);
 
-      // For RFC, only core approvals matter
+      // 2 core + 1 maintainer = 3 total >= quorum of 3, and at least 1 core
+      const isApproved =
+        approvalManager.coreApprovals.size >= quorum ||
+        (approvalManager.coreApprovals.size >= 1 &&
+          approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size >= quorum);
+      expect(isApproved).toBe(true);
+    });
+
+    it("should not approve RFC with only maintainer votes even if reaching quorum number", () => {
       const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2); // 3 for 5 members
-      expect(approvalManager.coreApprovals.size >= quorum).toBe(false);
+
+      approvalManager.comments = [
+        { user: { login: "maintainer1" }, body: "/approve" },
+        { user: { login: "maintainer2" }, body: "/approve" },
+      ];
+
+      // Add a third maintainer for this test
+      approvalManager.maintainerTeamMembers.push("maintainer3");
+      approvalManager.comments.push({ user: { login: "maintainer3" }, body: "/approve" });
+
+      approvalManager.processComments();
+
+      expect(approvalManager.coreApprovals.size).toBe(0);
+      expect(approvalManager.maintainerApprovals.size).toBe(3);
+
+      // 0 core + 3 maintainer = 3 total >= quorum, but no core approval so not approved
+      const isApproved =
+        approvalManager.coreApprovals.size >= quorum ||
+        (approvalManager.coreApprovals.size >= 1 &&
+          approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size >= quorum);
+      expect(isApproved).toBe(false);
+    });
+
+    it("should not approve RFC when combined votes are below quorum", () => {
+      const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2); // 3 for 5 members
+
+      approvalManager.comments = [
+        { user: { login: "core1" }, body: "/approve" },
+        { user: { login: "maintainer1" }, body: "/approve" },
+      ];
+
+      approvalManager.processComments();
+
+      expect(approvalManager.coreApprovals.size).toBe(1);
+      expect(approvalManager.maintainerApprovals.size).toBe(1);
+
+      // 1 core + 1 maintainer = 2 total < quorum of 3
+      const isApproved =
+        approvalManager.coreApprovals.size >= quorum ||
+        (approvalManager.coreApprovals.size >= 1 &&
+          approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size >= quorum);
+      expect(isApproved).toBe(false);
     });
   });
 

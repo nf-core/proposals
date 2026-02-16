@@ -246,25 +246,47 @@ describe("Workflow Integration Tests", () => {
       expect(quorum).toBe(3);
     });
 
-    it("should ignore maintainer votes in RFC workflow", async () => {
+    it("should approve RFC with combined core + maintainer votes reaching quorum", async () => {
       const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2); // 3 for 5 members
 
       approvalManager.comments = [
         { id: 1, user: { login: "core_alice" }, body: "/approve" },
         { id: 2, user: { login: "core_bob" }, body: "/approve" },
         { id: 3, user: { login: "maintainer_frank" }, body: "/approve" },
-        { id: 4, user: { login: "maintainer_grace" }, body: "/approve" },
-        // Only 2 core approvals, maintainer votes don't count for RFC
+        // 2 core + 1 maintainer = 3 total >= quorum, with at least 1 core
       ];
 
       approvalManager.processComments();
 
-      const isApproved = approvalManager.coreApprovals.size >= quorum;
+      const isApproved =
+        approvalManager.coreApprovals.size >= quorum ||
+        (approvalManager.coreApprovals.size >= 1 &&
+          approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size >= quorum);
+
+      expect(isApproved).toBe(true);
+      expect(approvalManager.coreApprovals.size).toBe(2);
+      expect(approvalManager.maintainerApprovals.size).toBe(1);
+      expect(quorum).toBe(3);
+    });
+
+    it("should not approve RFC with only maintainer votes", async () => {
+      const quorum = Math.ceil(approvalManager.coreTeamMembers.length / 2); // 3 for 5 members
+
+      approvalManager.comments = [
+        { id: 1, user: { login: "maintainer_frank" }, body: "/approve" },
+        { id: 2, user: { login: "maintainer_grace" }, body: "/approve" },
+      ];
+
+      approvalManager.processComments();
+
+      const isApproved =
+        approvalManager.coreApprovals.size >= quorum ||
+        (approvalManager.coreApprovals.size >= 1 &&
+          approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size >= quorum);
 
       expect(isApproved).toBe(false);
-      expect(approvalManager.coreApprovals.size).toBe(2);
-      expect(approvalManager.maintainerApprovals.size).toBe(2); // Tracked but not used for RFC approval
-      expect(quorum).toBe(3);
+      expect(approvalManager.coreApprovals.size).toBe(0);
+      expect(approvalManager.maintainerApprovals.size).toBe(2);
     });
 
     it("should handle RFC rejection with core team voting", async () => {
