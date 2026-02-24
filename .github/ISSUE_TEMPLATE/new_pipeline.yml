@@ -36,6 +36,14 @@ body:
     validations:
       required: true
 
+  - type: textarea
+    attributes:
+      label: What would a minimal first release of this pipeline include?
+      description: Describe the smallest useful version of this pipeline — the core steps and tools needed for a first release. Additional features can be added in later versions. E.g. for nf-core/rnaseq, an MVP would be one aligner (STAR), one quantification tool (Salmon), and base QC — additional aligners like HISAT2 and extra quantification methods would come later.
+      placeholder: "Alignment with STAR, quantification with Salmon, QC with FastQC/MultiQC. HISAT2, RSEM, and additional quantification options would come in later releases."
+    validations:
+      required: true
+
   - type: checkboxes
     attributes:
       label: "I confirm my proposed pipeline will follow nf-core guidelines. Most importantly, my pipeline will:"
