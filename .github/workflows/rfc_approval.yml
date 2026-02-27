@@ -40,20 +40,34 @@ jobs:
             console.log(`Quorum set to ${quorum}.`);
 
             function generateStatusBody(status) {
-              const approvers = [...approvalManager.coreApprovals];
-              const rejecters = [...approvalManager.coreRejections];
-              const awaiting = approvalManager.awaitingCore;
-              let body = `## Approval status: ${status}\n\nRFC has approvals from ${approvalManager.coreApprovals.size}/${quorum} required @nf-core/core quorum.\n\n`;
-              if (approvers.length > 0 || rejecters.length > 0 || awaiting.length > 0) {
-                body += `|Review&nbsp;Status|Core Team members|\n|--|--|\n`;
-                if (approvers.length > 0) {
-                  body += `| ✅&nbsp;Approved | ${approvalManager.formatUserList(approvers)} |\n`;
+              const coreApprovers = [...approvalManager.coreApprovals];
+              const maintainerApprovers = [...approvalManager.maintainerApprovals];
+              const coreRejecters = [...approvalManager.coreRejections];
+              const maintainerRejecters = [...approvalManager.maintainerRejections];
+              const awaitingCore = [...approvalManager.awaitingCore];
+              const awaitingMaintainers = [...approvalManager.awaitingMaintainers];
+
+              const totalApprovals = approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size;
+              let body = `## Approval status: ${status}\n\nRFC needs ${quorum} approvals: core team only, or core + maintainer combined (min. 1 core).\n**${totalApprovals}/${quorum}** approvals (${approvalManager.coreApprovals.size} core, ${approvalManager.maintainerApprovals.size} maintainer)\n\n`;
+              if (coreApprovers.length > 0 || maintainerApprovers.length > 0 || coreRejecters.length > 0 || maintainerRejecters.length > 0 || awaitingCore.length > 0 || awaitingMaintainers.length > 0) {
+                body += `|Review&nbsp;Status|Team members|\n|--|--|\n`;
+                if (coreApprovers.length > 0) {
+                  body += `| ✅&nbsp;Approved (Core) | ${approvalManager.formatUserList(coreApprovers)} |\n`;
                 }
-                if (rejecters.length > 0) {
-                  body += `| ❌&nbsp;Rejected | ${approvalManager.formatUserList(rejecters)} |\n`;
+                if (maintainerApprovers.length > 0) {
+                  body += `| ✅&nbsp;Approved (Maintainer) | ${approvalManager.formatUserList(maintainerApprovers)} |\n`;
                 }
-                if (awaiting.length > 0) {
-                  body += `| 🕐&nbsp;Pending | ${approvalManager.formatUserList(awaiting)} |\n`;
+                if (coreRejecters.length > 0) {
+                  body += `| ❌&nbsp;Rejected (Core) | ${approvalManager.formatUserList(coreRejecters)} |\n`;
+                }
+                if (maintainerRejecters.length > 0) {
+                  body += `| ❌&nbsp;Rejected (Maintainer) | ${approvalManager.formatUserList(maintainerRejecters)} |\n`;
+                }
+                if (awaitingCore.length > 0) {
+                  body += `| 🕐&nbsp;Pending (Core) | ${approvalManager.formatUserList(awaitingCore)} |\n`;
+                }
+                if (awaitingMaintainers.length > 0) {
+                  body += `| 🕐&nbsp;Pending (Maintainer) | ${approvalManager.formatUserList(awaitingMaintainers)} |\n`;
                 }
               }
               return body;
@@ -79,14 +93,12 @@ jobs:
               return;
             }
 
-
-
             // Determine status
             let status = '🕐 Pending';
 
             if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0)) {
               status = '❌ Rejected';
-            } else if (approvalManager.coreApprovals.size >= quorum) {
+            } else if (approvalManager.coreApprovals.size >= quorum || (approvalManager.coreApprovals.size >= 1 && (approvalManager.coreApprovals.size + approvalManager.maintainerApprovals.size) >= quorum)) {
               status = '✅ Approved';
             }
 
