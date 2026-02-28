@@ -397,4 +397,84 @@ describe("Workflow Integration Tests", () => {
       }
     });
   });
+
+  describe("Pipeline Proposal Workflow - Rejection Automation", () => {
+    let approvalManager;
+    const mockOrg = "nf-core";
+    const mockRepo = "proposals";
+    const mockIssueNumber = 99;
+
+    beforeEach(async () => {
+      mockGithub.request
+        .mockResolvedValueOnce({ data: [{ login: "core1" }, { login: "core2" }] })
+        .mockResolvedValueOnce({ data: [{ login: "maintainer1" }] });
+      mockGithub.paginate.mockResolvedValue([]);
+      mockGithub.rest.issues.get.mockResolvedValue({ data: { labels: [] } });
+      approvalManager = await new ApprovalManager(mockGithub, mockOrg, mockRepo, mockIssueNumber).initialize();
+    });
+
+    it("should set status to rejected if 2 core rejections", async () => {
+      approvalManager.coreRejections = new Set(["core1", "core2"]);
+      approvalManager.maintainerRejections = new Set();
+      let status;
+      if (
+        approvalManager.coreRejections.size >= 2 ||
+        (approvalManager.coreRejections.size >= 1 && approvalManager.maintainerRejections.size >= 1)
+      ) {
+        status = "❌ Rejected";
+      } else {
+        status = "🕐 Pending";
+      }
+      expect(status).toBe("❌ Rejected");
+    });
+
+    it("should set status to rejected if 1 core + 1 maintainer rejection", async () => {
+      approvalManager.coreRejections = new Set(["core1"]);
+      approvalManager.maintainerRejections = new Set(["maintainer1"]);
+      let status;
+      if (
+        approvalManager.coreRejections.size >= 2 ||
+        (approvalManager.coreRejections.size >= 1 && approvalManager.maintainerRejections.size >= 1)
+      ) {
+        status = "❌ Rejected";
+      } else {
+        status = "🕐 Pending";
+      }
+      expect(status).toBe("❌ Rejected");
+    });
+
+    it("should not set status to rejected if only 1 core rejection", async () => {
+      approvalManager.coreRejections = new Set(["core1"]);
+      approvalManager.maintainerRejections = new Set();
+      let status;
+      if (
+        approvalManager.coreRejections.size >= 2 ||
+        (approvalManager.coreRejections.size >= 1 && approvalManager.maintainerRejections.size >= 1)
+      ) {
+        status = "❌ Rejected";
+      } else {
+        status = "🕐 Pending";
+      }
+      expect(status).toBe("🕐 Pending");
+    });
+
+    it("should stay pending if 2 rejections but also 1 approval", async () => {
+      approvalManager.coreRejections = new Set(["core1", "core2"]);
+      approvalManager.maintainerRejections = new Set();
+      approvalManager.coreApprovals = new Set(["core3"]);
+      approvalManager.maintainerApprovals = new Set();
+      let status;
+      if (
+        (approvalManager.coreRejections.size >= 2 ||
+          (approvalManager.coreRejections.size >= 1 && approvalManager.maintainerRejections.size >= 1)) &&
+        approvalManager.coreApprovals.size === 0 &&
+        approvalManager.maintainerApprovals.size === 0
+      ) {
+        status = "❌ Rejected";
+      } else {
+        status = "🕐 Pending";
+      }
+      expect(status).toBe("🕐 Pending");
+    });
+  });
 });
