@@ -16,9 +16,7 @@ This proposal originated from discussions during the nf-core core team retreat i
 
 Widely adopted pipelines in the nf-core community are critical to the ecosystem. They serve as templates and references for the development of other pipelines, and new developers often look to them as examples of best practice. As such, these pipelines should adhere more strictly to the guidelines promoted by nf-core and follow good software development life cycle practices.
 
-We therefore propose a tiering system for pipeline development: the more popular and widely used a pipeline becomes, the higher the expectations for following recommended practices. This approach encourages high-visibility pipelines to lead by example while providing a clear model for other pipelines to aspire to.
-
-During the discussion, core team members emphasised the need for clear incentives (e.g. badges) and a strategy for ensuring continued adherence.
+We therefore propose a tiering system for pipeline development: the more popular and widely used a pipeline becomes, the higher the expectations for following recommended practices. This approach aims that high-visibility pipelines become a clear model for other nf-core pipelines by example.
 
 ### Goals
 
@@ -73,7 +71,6 @@ Recommended practices:
 
 - Regular review of default configuration usage
 - Pipeline template and tool versions kept within two releases of current
-- Automated testing coverage above eighty percent
 - Clear issue advisories when known problems are identified
 - Participation in an nf-core bytesize talk
 
@@ -101,6 +98,7 @@ None noted.
 
 - [x] Update pipelines documentation: https://github.com/nf-core/website/pull/3718
 - [ ] Made a blog post to announce the VIP tier
+- [ ] Add VIP indicator on nf-co.re/pipelines
 
 # Unresolved Questions
 
