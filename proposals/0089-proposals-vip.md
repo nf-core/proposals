@@ -12,17 +12,13 @@ nf-core pipelines widely adopted in the community should adhere more strictly to
 
 # Background & Motivation
 
-Derived from the proposal here: https://github.com/nf-core/proposals/issues/61, some members of the core team and community were not comfortable to immediately start 'blindly' allowing LLM associated code within the nf-core ecosystem, primarily due to:
+This proposal originated from discussions during the nf-core core team retreat in September 2025 and was further developed in https://github.com/nf-core/proposals/issues/89.
 
-- Quality of code in some PRs
-- Concerns about the legality/lack of attribution
-- Adding a lot of extra cruft to the template purely to try and make sure AI agents 'do the right thing' being a bad thing
+Widely adopted pipelines in the nf-core community are critical to the ecosystem. They serve as templates and references for the development of other pipelines, and new developers often look to them as examples of best practice. As such, these pipelines should adhere more strictly to the guidelines promoted by nf-core and follow good software development life cycle practices.
 
-with particularly the first point ending up putting more work on community coordinators/managers.
+We therefore propose a tiering system for pipeline development: the more popular and widely used a pipeline becomes, the higher the expectations for following recommended practices. This approach encourages high-visibility pipelines to lead by example while providing a clear model for other pipelines to aspire to.
 
-Generally there was an agreement that LLMs are here to stay, and we cannot avoid them.
-
-But there was a feeling we need to at least make a statement on our stance on them and possibly a policy document.
+During the discussion, core team members emphasised the need for clear incentives (e.g. badges) and a strategy for ensuring continued adherence.
 
 ### Goals
 
