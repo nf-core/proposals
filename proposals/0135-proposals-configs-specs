@@ -1,0 +1,59 @@
+- Start Date: 2026-04-23
+- Reference Issues: https://github.com/nf-core/proposals/issues/135
+- Implementation PR: https://github.com/nf-core/website/pull/
+
+# Summary
+
+We should define specifications for what is considered a best-practise nf-core/configs, and implement linting commands that help check a config PR adheres to these specifications.
+
+# Champion
+
+[@jfy133](https://github.com/jfy133)
+
+# Background & Motivation
+
+nf-core/configs is an under-appreciated resource offered by the nf-core community.
+This is one of the main factors that allow us to sell nf-core pipelines as highly portable and efficient.
+
+However currently, there is little infrastructure or help around writing an nf-core/config.
+There is also a lack of consistency (although to be fair, not as bad as you would expect) across configs, which make it harder to do widespread search/replace etc, for example when we have to make changes related to core changes by Nextflow.
+
+It would be nice to bring nf-core/configs up to be a 'first-class' citizen within the ecosystem.
+This will help with better visibility and adoption - both within and and outside nf-core itself (e.g. with third-party pipelines using the template).
+
+This would also help contribute to the work currently being done to make a config builder tool.
+
+# Goals
+
+- Specify specifications for configs
+- Specify reviewing checklist for config PRs
+- Implement linting checks of new/existing configs within nf-core/configs within nf-core/tools
+
+# Non-Goals
+
+- Does not (currently) plan to re-structure configs
+- Does not plan to force any major changes to existing configs
+
+# Detailed Design
+
+TBC
+
+# Drawbacks
+
+TBC
+
+# Alternatives
+
+TBC
+
+# Adoption strategy
+
+TBC
+
+# Unresolved Questions
+
+- Define specs
+
+# References
+
+- Reference Issues: https://github.com/nf-core/proposals/issues/135
