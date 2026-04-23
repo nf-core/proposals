@@ -52,7 +52,7 @@ None noted.
 # Adoption strategy
 
 - [x] Made a blog post statement: https://github.com/nf-core/website/pull/3705
-- [ ] Link to contribution documentation (e.g.: https://nf-co.re/docs/contributing/how_to_contribute_to_nf-core, and `CONTRIBUTING.md` on github repo)
+- [x] Link to contribution documentation (e.g.: https://nf-co.re/docs/contributing/how_to_contribute_to_nf-core, and `CONTRIBUTING.md` on github repo): https://github.com/nf-core/website/pull/4166
 
 # Unresolved Questions
 
