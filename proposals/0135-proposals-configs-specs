@@ -36,23 +36,28 @@ This would also help contribute to the work currently being done to make a confi
 
 # Detailed Design
 
-TBC
+Three steps:
+
+1. Define specs with wider community: https://github.com/nf-core/website/pull/4087
+2. Implement `nf-core configs create` command: https://github.com/nf-core/tools/pull/3949
+4. Implement `nf-core configs lint` command
 
 # Drawbacks
 
-TBC
+None noted
 
 # Alternatives
 
-TBC
+None noted
 
 # Adoption strategy
 
-TBC
+See detailed design, as relative straight forward
 
 # Unresolved Questions
 
 - Define specs
+- Structure/design of `nf-core configs lint`
 
 # References
 
