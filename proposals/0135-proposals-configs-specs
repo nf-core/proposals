@@ -38,9 +38,10 @@ This would also help contribute to the work currently being done to make a confi
 
 Three steps:
 
-1. Define specs with wider community: https://github.com/nf-core/website/pull/4087
-2. Implement `nf-core configs create` command: https://github.com/nf-core/tools/pull/3949
-4. Implement `nf-core configs lint` command
+1. ✅ Define specs with wider community: https://github.com/nf-core/website/pull/4087
+2. Update links on nf-core/configs repo, website guide, and announce 
+3. Implement `nf-core configs create` command: https://github.com/nf-core/tools/pull/3949
+4. Implement `nf-core configs lint` command```
 
 # Drawbacks
 
