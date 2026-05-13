@@ -125,7 +125,7 @@ Mapping `process_low` is the most opinionated call: the legacy value bundles 12 
 Drafted in [nf-core/website#4212](https://github.com/nf-core/website/pull/4212):
 
 - [Component resource requirements spec](https://nf-co.re/docs/specifications/components/modules/resource-requirements) updated with the axis labels as the preferred pattern, bundled labels demoted to legacy with a migration link.
-- New [Migrating to axis-decomposed resource labels](https://nf-co.re/docs/contributing/migrating-resource-labels) guide with the mapping table above, a `sed` recipe for site-config maintainers, and a deprecation timeline.
+- New _Migrating to axis-decomposed resource labels_ guide (drafted in [nf-core/website#4212](https://github.com/nf-core/website/pull/4212), will live at `/docs/contributing/migrating-resource-labels` after merge) with the mapping table above, a `sed` recipe for site-config maintainers, and a deprecation timeline.
 - User-facing [system configuration page](https://nf-co.re/docs/running/configuration/nextflow-for-your-system) example updated to use axis labels alongside an explainer of the legacy scheme.
 - Pipeline template `base.config` comment block points new authors at the docs.
 
