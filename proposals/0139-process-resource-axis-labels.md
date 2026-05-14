@@ -18,9 +18,10 @@ This RFC replaces the bundled labels with three orthogonal axes (`process_cpus_*
 
 The current label set was designed to be simple and to "just work" out of the box, with users expected to override values in their own configs. In practice:
 
-- There is no way to express "many CPUs but little memory". Authors either pick `process_high` (which over-allocates memory by a large factor) or stack `process_high_memory` on top of `process_medium`, which is undocumented and counter-intuitive.
+- There is no way to express "many CPUs but little memory". Authors are forced to pick `process_high`, which also over-allocates memory by a large factor.
+- The reverse case ("moderate CPUs but high memory") is only expressible by stacking `process_high_memory` on top of `process_medium`. The pattern works, but is undocumented and counter-intuitive.
 - Bundled labels tie CPU, memory and time together even though most tools scale on only one axis. Over-provisioning by hundreds of times is not unusual.
-- Pipelines have already invented ad-hoc additions (`process_high_cpu` in nf-core/genomeassembler, `process_high_memory` in nf-core/scnanoseq). Without a community-wide convention this creep will continue and diverge across pipelines.
+- Pipelines have already worked around this by inventing ad-hoc labels (`process_high_cpu` in nf-core/genomeassembler) or by stacking existing labels in undocumented ways (`process_medium` + `process_high_memory` on NanoComp in nf-core/scnanoseq). Without a community-wide convention this creep will continue and diverge across pipelines.
 - Stacking labels does work (later labels win, definition order matters) but is not obvious or documented as the recommended pattern.
 
 A short-term workaround was merged in [nf-core/tools#4264](https://github.com/nf-core/tools/pull/4264) (a single new `process_low_memory` label) so the rnaseq pipeline could ship Trim Galore v2.0 immediately. This RFC covers the larger structural change agreed in the Slack discussion and prototyped in [nf-core/tools#4265](https://github.com/nf-core/tools/pull/4265).
@@ -167,4 +168,4 @@ Drafted in [nf-core/website#4212](https://github.com/nf-core/website/pull/4212):
 - Short-term `process_low_memory` addition: https://github.com/nf-core/tools/pull/4264
 - Prototype of orthogonal restructure: https://github.com/nf-core/tools/pull/4265
 - Documentation update: https://github.com/nf-core/website/pull/4212
-- Pipelines inventing their own labels: nf-core/scnanoseq nanocomp (`process_medium` + `process_high_memory`), nf-core/genomeassembler medaka (`process_high_cpu` + `process_high_memory` + `process_long`)
+- Pipelines working around the bundled scheme: nf-core/scnanoseq NanoComp (stacks `process_medium` + `process_high_memory`), nf-core/genomeassembler medaka (uses the locally-invented `process_high_cpu` alongside `process_high_memory` + `process_long`)
