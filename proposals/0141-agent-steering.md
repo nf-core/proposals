@@ -38,7 +38,7 @@ There was previously an RFC on this topic, but it has gone stale months ago.
 
 ## `nf-core/agent-steering`
 
-To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` \[name open to discussion - IT\] is created. Within this RFC, a single file called `AGENTS.md` (see *infra*) will be created in the repository. No other file should be created, unless called for by a future RFC.
+To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` \[name open to discussion - IT\] is created. Within this RFC, a single file called `AGENTS.md` (see *infra*) will be created in the repository, alongside a standard README and LICENSE. No other file should be created, unless called for by a future RFC.
 
 ## Template `AGENTS.md`
 
