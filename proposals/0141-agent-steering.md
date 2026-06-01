@@ -1,7 +1,7 @@
 - Start Date: 2026-06-01
 - Reference Issues: https://github.com/nf-core/proposals/issues/141
 - Implementation PRs:
-    - None yet
+  - None yet
 
 # Summary
 
@@ -13,7 +13,7 @@ AI agents are an increasingly used tool in software development, and Nextflow pi
 
 # Background & Motivation
 
-AI agents are systems that combine a Large Language Model with multiple deterministic tools to partially or fully automate software development. Apart from the user's prompts, they rely on several types of fixed input (*steering files*), including project instructions and skills. While there are differences in how agents from different vendors discover these files, `AGENTS.md` (https://agents.md/) has become a de facto standard. All popular agents are now set up to read this file before working in a directory.
+AI agents are systems that combine a Large Language Model with multiple deterministic tools to partially or fully automate software development. Apart from the user's prompts, they rely on several types of fixed input (_steering files_), including project instructions and skills. While there are differences in how agents from different vendors discover these files, `AGENTS.md` (https://agents.md/) has become a de facto standard. All popular agents are now set up to read this file before working in a directory.
 
 nf-core currently has no specific `AGENTS.md` or other agent steering files. This requires extra work from developers to ensure that the agent output complies with nf-core standards, and creates room for divergence in practices. To promote uniformity and reduce the issue of non-compliant AI contributions, it would be prudent to introduce some basic guidance into the template, so that it affects every project automatically after the next update.
 
@@ -38,7 +38,7 @@ There was previously an RFC on this topic, but it has gone stale months ago.
 
 ## `nf-core/agent-steering`
 
-To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` \[name open to discussion - IT\] is created. Within this RFC, a single file called `AGENTS.md` (see *infra*) will be created in the repository, alongside a standard README and LICENSE. No other file should be created, unless called for by a future RFC.
+To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` \[name open to discussion - IT\] is created. Within this RFC, a single file called `AGENTS.md` (see _infra_) will be created in the repository, alongside a standard README and LICENSE. No other file should be created, unless called for by a future RFC.
 
 ## Template `AGENTS.md`
 
@@ -47,9 +47,10 @@ A new file called `AGENTS.md` is added to the nf-core pipeline template. This fi
 ### Preamble
 
 The preamble contains:
+
 - a one-sentence reference to nf-core ("This repository was created with the nf-core pipeline template" or OWTTE),
 - the instruction to consult `CONTRIBUTING.md`,
-- the instruction to consult the remote steering file (*infra*).
+- the instruction to consult the remote steering file (_infra_).
 
 The preamble does not contain any other information or instructions.
 
@@ -61,9 +62,10 @@ The pipeline-specific section contains any standards and practices specific to a
 
 ## Remote `AGENTS.md`
 
-A new file called `AGENTS.md` is created inside `nf-core/agent-steering` (*supra*). This file contains ample guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
+A new file called `AGENTS.md` is created inside `nf-core/agent-steering` (_supra_). This file contains ample guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
 
 This RFC does not specify a rigid structure or contents, but the following elements will tentatively be included (in some order):
+
 - a treemap of the template with explanations of directories and files,
 - a description of nf-core tools, list of commands, and examples for the most common operations in pipeline development,
 - a description of nf-test and basic testing concepts,
@@ -78,7 +80,7 @@ A new "Include AGENTS.md"/`include_agents_md` flag is added to the pipeline crea
 
 ## Pipeline linting tests
 
-A new linting test is added to `nf-core pipelines lint`. This test verifies that the preamble of `AGENTS.md` exactly matches that in the template. 
+A new linting test is added to `nf-core pipelines lint`. This test verifies that the preamble of `AGENTS.md` exactly matches that in the template.
 
 ## Documentation
 
@@ -93,7 +95,7 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 # Alternatives
 
 - **Status quo: no centralized agent guidance.** This is the easiest solution to implement, but it is and will keep causing divergent development practices. It also increases the influx of low-quality PRs from developers who forget to include any nf-core guidance, often due to the lack of domain knowledge.
-- **Delegate all agent guidance to an extension.** While this would prevent any template pollution, it has the significant drawback of requiring an additional manual step from the developer. Thus, it is not a complete solution to the problem of poorly curated AI contributions. A more comprehensive nf-core extension might be created in the future, but is out of scope of this RFC. 
+- **Delegate all agent guidance to an extension.** While this would prevent any template pollution, it has the significant drawback of requiring an additional manual step from the developer. Thus, it is not a complete solution to the problem of poorly curated AI contributions. A more comprehensive nf-core extension might be created in the future, but is out of scope of this RFC.
 
 # Adoption Strategy
 
@@ -106,14 +108,14 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 ## Testing stage
 
 - [ ] Manual addition of `AGENTS.md` to:
-    - [ ] `nf-core/modules` (maintainers)
-    - [ ] at least 5 pipelines (volunteer pipeline maintainers)
+  - [ ] `nf-core/modules` (maintainers)
+  - [ ] at least 5 pipelines (volunteer pipeline maintainers)
 - [ ] Testing by volunteers for at least 1 month (volunteer developers)
 
 ## Implementation stage
 
 - [ ] Pipeline `AGENTS.md` second draft (anyone)
-- [ ] Central `AGENTS.md` second draft (anyone) 
+- [ ] Central `AGENTS.md` second draft (anyone)
 - [ ] Addition of `AGENTS.md` to the template (infrastructure team)
 - [ ] Addition of relevant options to pipeline creation (infrastructure team)
 - [ ] Addition of `AGENTS.md` lint test (infrastructure team)
@@ -138,6 +140,7 @@ Tools release with new features: September-October 2026
 - **Exact content of the central `AGENTS.md`.** This will develop progressively during drafting and testing.
 
 # References
+
 - Previous RFC: https://github.com/nf-core/proposals/issues/61
 - Slack discussion 1 (#rfc-suggestions): https://nfcore.slack.com/archives/C08TXM0GGMT/p1779271876671859
 - Slack discussion 2 (#team-maintainers): https://nfcore.slack.com/archives/C043UU89KKQ/p1779271926707799
