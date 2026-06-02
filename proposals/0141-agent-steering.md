@@ -36,9 +36,21 @@ There was previously an RFC on this topic, but it has gone stale months ago.
 
 # Detailed Design
 
-## `nf-core/agent-steering`
+## `nf-core/agents` and remote `AGENTS.md`
 
-To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` is created. Within this RFC, a single file called `AGENTS.md` (see _infra_) will be created in the root of the repository.
+To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agents` is created. Within this RFC, a single file called `AGENTS.md` is created in the root of the repository.
+
+`AGENTS.md` contains guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
+
+This RFC does not specify a rigid structure or contents, but the following elements will tentatively be included (in some order):
+
+- a treemap of the template with explanations of directories and files,
+- a description of nf-core tools, list of commands, and examples for the most common operations in pipeline development,
+- a description of nf-test and basic testing concepts,
+- commit and PR discipline (scopes, message format),
+- pre-commit routine (nextflow lint, nf-core lint, tests, prek),
+- self-disclosure rules for fully autonomous agents,
+- references to nf-core documentation as required.
 
 ## Template `AGENTS.md`
 
@@ -50,7 +62,7 @@ The preamble contains:
 
 - a one-sentence reference to nf-core ("This repository was created with the nf-core pipeline template" or OWTTE),
 - the instruction to consult `CONTRIBUTING.md`,
-- the instruction to consult the remote steering file (_infra_).
+- the instruction to consult the remote steering file (_supra_).
 
 The preamble does not contain any other information or instructions.
 
@@ -58,21 +70,13 @@ The preamble does not contain any other information or instructions.
 
 The pipeline-specific section contains any standards and practices specific to a given pipeline. Developing it and keeping it up to date is the resposibility of the maintainers of the pipeline. This section should not recapitulate any general nf-core standards.
 
-`nf-core/modules` may utilize this section to explain the specifics of the repository.
+## `AGENTS.md` in non-template repositories
 
-## Remote `AGENTS.md`
+nf-core repositories not synced with the template may have separate `AGENTS.md` files. These files do not need to follow the structure of the template `AGENTS.md`.
 
-A new file called `AGENTS.md` is created inside `nf-core/agent-steering` (_supra_). This file contains guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
+Within this RFC, `AGENTS.md` is added to `nf-core/modules`. The file contains a preamble similar to that from the template, and a modules-specific section.
 
-This RFC does not specify a rigid structure or contents, but the following elements will tentatively be included (in some order):
-
-- a treemap of the template with explanations of directories and files,
-- a description of nf-core tools, list of commands, and examples for the most common operations in pipeline development,
-- a description of nf-test and basic testing concepts,
-- commit and PR discipline (scopes, message format),
-- pre-commit routine (linting, tests, prek),
-- self-disclosure rules for fully autonomous agents,
-- references to nf-core documentation as required.
+Given their special nature, this RFC does not decide on the inclusion and/or content of `AGENTS.md` in other non-template repositories.
 
 ## Pipeline creation workflow
 
@@ -101,7 +105,7 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 
 ## Drafting stage
 
-- [ ] Creating `nf-core/agent-steering` (core team)
+- [ ] Creating `nf-core/agents` (core team)
 - [ ] Pipeline `AGENTS.md` first draft (anyone)
 - [ ] Central `AGENTS.md` first draft (anyone)
 
