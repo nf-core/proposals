@@ -27,7 +27,7 @@ There was previously an RFC on this topic, but it has gone stale months ago.
 
 - Add a minimal `AGENTS.md` to the template, with references to `CONTRIBUTING.md` and other steering files.
 - Add a general `AGENTS_nfcore.md` to a public repository (website or otherwise), referenced by `AGENTS.md`.
-- Add a pipeline-specific ~~`AGENTS_[pipeline].md`~~ **section** to the template, ~~initially near-empty, intended for pipeline-specific coding standards and referenced by~~ **within** the main `AGENTS.md`. \[Alteration by IT, introduced following discussion in the original proposal issue\]
+- Add a pipeline-specific section to the template, within the main `AGENTS.md`. The section will initially be nearly-empty, intended for developers to add pipeline-specific coding standards.
 
 # Non-Goals
 
@@ -38,7 +38,7 @@ There was previously an RFC on this topic, but it has gone stale months ago.
 
 ## `nf-core/agent-steering`
 
-To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` \[name open to discussion - IT\] is created. Within this RFC, a single file called `AGENTS.md` (see _infra_) will be created in the repository, alongside a standard README and LICENSE. No other file should be created, unless called for by a future RFC.
+To create a dedicated, findable space for agent-related documents in nf-core, a new repository called `nf-core/agent-steering` is created. Within this RFC, a single file called `AGENTS.md` (see _infra_) will be created in the root of the repository.
 
 ## Template `AGENTS.md`
 
@@ -62,7 +62,7 @@ The pipeline-specific section contains any standards and practices specific to a
 
 ## Remote `AGENTS.md`
 
-A new file called `AGENTS.md` is created inside `nf-core/agent-steering` (_supra_). This file contains ample guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
+A new file called `AGENTS.md` is created inside `nf-core/agent-steering` (_supra_). This file contains guidance for AI agents about the template and nf-core coding practices. The file will be updated as agents evolve, with updates via PR as required.
 
 This RFC does not specify a rigid structure or contents, but the following elements will tentatively be included (in some order):
 
@@ -95,7 +95,7 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 # Alternatives
 
 - **Status quo: no centralized agent guidance.** This is the easiest solution to implement, but it is and will keep causing divergent development practices. It also increases the influx of low-quality PRs from developers who forget to include any nf-core guidance, often due to the lack of domain knowledge.
-- **Delegate all agent guidance to an extension.** While this would prevent any template pollution, it has the significant drawback of requiring an additional manual step from the developer. Thus, it is not a complete solution to the problem of poorly curated AI contributions. A more comprehensive nf-core extension might be created in the future, but is out of scope of this RFC.
+- **Delegate all agent guidance to an extension / plugin.** While this would prevent any template pollution, it has the significant drawback of requiring the developer to install the plugin ahead of time. Thus, it is not a complete solution to the problem of poorly curated AI contributions. A more comprehensive nf-core extension might be created in the future, but is out of scope of this RFC.
 
 # Adoption Strategy
 
@@ -130,10 +130,10 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 
 ## Tentative timeline
 
-Start of drafting: immediately
-End of drafting and start of testing: by June 30, 2026
-End of testing and start of implementation: by July 31, 2026
-Tools release with new features: September-October 2026
+- Start of drafting: immediately
+- End of drafting and start of testing: by June 30, 2026
+- End of testing and start of implementation: by July 31, 2026
+- Tools release with new features: September-October 2026
 
 # Unresolved Questions
 
