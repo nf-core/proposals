@@ -21,7 +21,7 @@ Concerns have been rightly raised about keeping the main steering file up to dat
 
 Some community members have argued that `CONTRIBUTING.md` is a sufficient file to guide agents as well as human programmers. While this file is valuable, it is not automatically introduced into agent context, and thus should be explicitly included by reference. Furthermore, it is optimized for humans, so agent guidance should extend beyond this file.
 
-There was previously an RFC on this topic, but it has gone stale months ago.
+There was previously [an RFC](https://github.com/nf-core/proposals/issues/61) on this topic, but it has gone stale months ago and thus was closed (as not planned).
 
 # Goals
 
@@ -46,7 +46,11 @@ This RFC does not specify a rigid structure or contents, but the following eleme
 
 - a treemap of the template with explanations of directories and files,
 - a description of nf-core tools, list of commands, and examples for the most common operations in pipeline development,
+- nf-core workflows, subworkflows, and modules,
+- roles of different config files,
+- meta map conventions,
 - a description of nf-test and basic testing concepts,
+- common Nextflow pitfalls (possibly by reference),
 - commit and PR discipline (scopes, message format),
 - pre-commit routine (nextflow lint, nf-core lint, tests, prek),
 - self-disclosure rules for fully autonomous agents,
