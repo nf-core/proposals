@@ -1,7 +1,7 @@
 - Start Date: 2026-06-01
 - Reference Issues: https://github.com/nf-core/proposals/issues/141
 - Implementation PRs:
-  - None yet
+  - https://github.com/nf-core/tools/pull/4318
 
 # Summary
 
@@ -110,7 +110,7 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 ## Drafting stage
 
 - [ ] Creating `nf-core/agents` (core team)
-- [ ] Pipeline `AGENTS.md` first draft (anyone)
+- [x] Pipeline `AGENTS.md` first draft (anyone)
 - [ ] Central `AGENTS.md` first draft (anyone)
 
 ## Testing stage
