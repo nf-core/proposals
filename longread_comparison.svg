@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="870" font-family="Helvetica,Arial,sans-serif">
+<rect width="1240" height="870" fill="#ffffff"/>
+<text x="20" y="40" font-size="24" font-weight="700" fill="#1a1a1a">Long-read rare-disease pipelines — feature comparison</text>
+<text x="20" y="66" font-size="14" fill="#666">For PacBio HiFi-human-WGS-WDL parity · compiled June 2026 · for the Children's Mercy evaluation</text>
+<rect x="20" y="86" width="300" height="56" fill="#2d2d2d"/>
+<text x="34" y="120" font-size="15" font-weight="700" fill="#ffffff">Stage / capability</text>
+<rect x="320" y="86" width="300" height="56" fill="#3949ab"/>
+<text x="470.0" y="111" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">nf-core/longraredisease</text>
+<text x="470.0" y="130" font-size="12" fill="#ffffff" opacity="0.9" text-anchor="middle">pre-release · ONT-first</text>
+<rect x="620" y="86" width="300" height="56" fill="#00897b"/>
+<text x="770.0" y="111" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">nallo (GMS)</text>
+<text x="770.0" y="130" font-size="12" fill="#ffffff" opacity="0.9" text-anchor="middle">production · PacBio-first</text>
+<rect x="920" y="86" width="300" height="56" fill="#e64a19"/>
+<text x="1070.0" y="111" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">PacBio HiFi-WGS-WDL</text>
+<text x="1070.0" y="130" font-size="12" fill="#ffffff" opacity="0.9" text-anchor="middle">vendor WDL · v3.3.1</text>
+<rect x="20" y="142" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="166.0" font-size="13.5" font-weight="600" fill="#222">Platforms</text>
+<text x="470.0" y="166.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">ONT + PacBio (ONT-first)</text>
+<text x="770.0" y="166.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">PacBio + ONT (PacBio-first)</text>
+<text x="1070.0" y="166.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">PacBio HiFi only</text>
+<rect x="20" y="180" width="1200" height="38" fill="#ffffff"/>
+<rect x="20" y="180" width="1200" height="38" fill="#fff7e0"/>
+<text x="34" y="204.0" font-size="13.5" font-weight="600" fill="#222">Maturity / releases</text>
+<text x="470.0" y="204.0" font-size="12.5" font-weight="700" fill="#1a1a1a" text-anchor="middle">Pre-release (dev only, 0 tags)</text>
+<text x="770.0" y="204.0" font-size="12.5" font-weight="700" fill="#1a1a1a" text-anchor="middle">Production · released</text>
+<text x="1070.0" y="204.0" font-size="12.5" font-weight="700" fill="#1a1a1a" text-anchor="middle">v3.3.1 · ~8 rel/yr</text>
+<rect x="20" y="218" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="242.0" font-size="13.5" font-weight="600" fill="#222">Home / governance</text>
+<text x="470.0" y="242.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">nf-core (official)</text>
+<text x="770.0" y="242.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">GMS · nf-core template</text>
+<text x="1070.0" y="242.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">PacBio (vendor)</text>
+<rect x="20" y="256" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="280.0" font-size="13.5" font-weight="600" fill="#222">Alignment</text>
+<text x="470.0" y="280.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">minimap2</text>
+<text x="770.0" y="280.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">minimap2</text>
+<text x="1070.0" y="280.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">pbmm2</text>
+<rect x="20" y="294" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="318.0" font-size="13.5" font-weight="600" fill="#222">Read QC + coverage</text>
+<text x="470.0" y="318.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Nanoplot, mosdepth</text>
+<text x="770.0" y="318.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">FastQC, cramino, mosdepth</text>
+<text x="1070.0" y="318.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">mosdepth</text>
+<rect x="20" y="332" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="356.0" font-size="13.5" font-weight="600" fill="#222">SNV / indel</text>
+<text x="470.0" y="356.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Clair3 + DeepVariant</text>
+<text x="770.0" y="356.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">DeepVariant (Sentieon planned)</text>
+<text x="1070.0" y="356.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">DeepVariant / Parabricks GPU</text>
+<rect x="20" y="370" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="394.0" font-size="13.5" font-weight="600" fill="#222">Structural variants</text>
+<text x="470.0" y="394.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Sniffles2+cuteSV+SVIM merge</text>
+<text x="770.0" y="394.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Sniffles / Severus / Sawfish</text>
+<text x="1070.0" y="394.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">sawfish 2.2</text>
+<rect x="20" y="408" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="432.0" font-size="13.5" font-weight="600" fill="#222">CNV</text>
+<text x="470.0" y="432.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Spectre2 / HiFiCNV / QDNAseq</text>
+<text x="770.0" y="432.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">HiFiCNV  (→ Sawfish, PB)</text>
+<text x="1070.0" y="432.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">sawfish copy-number</text>
+<rect x="20" y="446" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="470.0" font-size="13.5" font-weight="600" fill="#222">Tandem repeats (STR)</text>
+<text x="470.0" y="470.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Straglr</text>
+<text x="770.0" y="470.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">TRGT (PB) / STRdust (ONT)</text>
+<text x="1070.0" y="470.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">TRGT 5.0</text>
+<rect x="20" y="484" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="508.0" font-size="13.5" font-weight="600" fill="#222">Phasing</text>
+<text x="470.0" y="508.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">LongPhase</text>
+<text x="770.0" y="508.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">LongPhase / WhatsHap / HiPhase</text>
+<text x="1070.0" y="508.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">HiPhase 1.6</text>
+<rect x="20" y="522" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="546.0" font-size="13.5" font-weight="600" fill="#222">Methylation</text>
+<text x="470.0" y="546.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Modkit</text>
+<text x="770.0" y="546.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">modkit, pb-CpG (PB), MethBat</text>
+<text x="1070.0" y="546.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">pb-CpG-tools + MethBat</text>
+<rect x="20" y="560" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="584.0" font-size="13.5" font-weight="600" fill="#222">De novo assembly</text>
+<text x="470.0" y="584.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">hifiasm + svim-asm + dipcall</text>
+<text x="770.0" y="584.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">hifiasm (trio + singleton)</text>
+<rect x="920" y="560" width="300" height="38" fill="#fbe9e7"/>
+<text x="1070.0" y="584.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<rect x="20" y="598" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="622.0" font-size="13.5" font-weight="600" fill="#222">Mitochondrial</text>
+<rect x="320" y="598" width="300" height="38" fill="#fbe9e7"/>
+<text x="470.0" y="622.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<rect x="620" y="598" width="300" height="38" fill="#fbe9e7"/>
+<text x="770.0" y="622.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<text x="1070.0" y="622.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Mitorsaw</text>
+<rect x="20" y="636" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="660.0" font-size="13.5" font-weight="600" fill="#222">Paralog / segdup (SMN)</text>
+<rect x="320" y="636" width="300" height="38" fill="#fbe9e7"/>
+<text x="470.0" y="660.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<text x="770.0" y="660.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Paraphase (PB)</text>
+<text x="1070.0" y="660.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Paraphase</text>
+<rect x="20" y="674" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="698.0" font-size="13.5" font-weight="600" fill="#222">Pharmacogenomics</text>
+<rect x="320" y="674" width="300" height="38" fill="#fbe9e7"/>
+<text x="470.0" y="698.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<rect x="620" y="674" width="300" height="38" fill="#fbe9e7"/>
+<text x="770.0" y="698.0" font-size="12.5" fill="#c0392b" text-anchor="middle" font-style="italic">— not included</text>
+<text x="1070.0" y="698.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">StarPhase + PharmCAT</text>
+<rect x="20" y="712" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="736.0" font-size="13.5" font-weight="600" fill="#222">Joint / family calling</text>
+<text x="470.0" y="736.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Trio-aware</text>
+<text x="770.0" y="736.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Family / joint (GLNexus)</text>
+<text x="1070.0" y="736.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Family + joint sawfish</text>
+<rect x="20" y="750" width="1200" height="38" fill="#f4f6fb"/>
+<text x="34" y="774.0" font-size="13.5" font-weight="600" fill="#222">Annotation &amp; ranking</text>
+<text x="470.0" y="774.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Exomiser, SvAnna, AnnotSV</text>
+<text x="770.0" y="774.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">echtvar, CADD, VEP, genmod</text>
+<text x="1070.0" y="774.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">slivar, svpack, Phrank</text>
+<rect x="20" y="788" width="1200" height="38" fill="#ffffff"/>
+<text x="34" y="812.0" font-size="13.5" font-weight="600" fill="#222">Clinical output target</text>
+<text x="470.0" y="812.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">GeneYx / Exomiser / SvAnna</text>
+<text x="770.0" y="812.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">Scout (research + clinical)</text>
+<text x="1070.0" y="812.0" font-size="12.5" font-weight="400" fill="#1a1a1a" text-anchor="middle">HPO tertiary reports</text>
+<rect x="20" y="86" width="1200" height="740" fill="none" stroke="#d0d0d0" stroke-width="1"/>
+<line x1="320" y1="86" x2="320" y2="826" stroke="#d0d0d0" stroke-width="1"/>
+<line x1="620" y1="86" x2="620" y2="826" stroke="#d0d0d0" stroke-width="1"/>
+<line x1="920" y1="86" x2="920" y2="826" stroke="#d0d0d0" stroke-width="1"/>
+<text x="20" y="852" font-size="11.5" fill="#888">Red / “—” = capability absent.  longraredisease = proposals#64 (accepted, dev branch, no release yet).  WDL = PacBio HiFi-human-WGS-WDL v3.3.1.</text>
+</svg>
