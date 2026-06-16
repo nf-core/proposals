@@ -334,6 +334,7 @@ describe("ApprovalManager", () => {
         repo: mockRepo,
         comment_id: 2,
       });
+      expect(mockGithub.rest.issues.deleteComment).toHaveBeenCalledTimes(1);
       expect(mockGithub.rest.issues.updateComment).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
