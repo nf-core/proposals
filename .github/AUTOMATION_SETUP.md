@@ -15,11 +15,8 @@ than a requirement. They are **not** wired up in this repo today.
 If you later decide you want them (e.g. for `type:Pipeline` filtering in issue
 search):
 
-1. An org owner creates the types at
-   **github.com/organizations/nf-core/settings/issue-types**, named exactly
-   `Pipeline`, `RFC`, and `Special Interest Group`.
-2. Add the matching `type:` key to each issue-form template, e.g.
-   `type: "Pipeline"` in `new_pipeline.yml`.
+1. An org owner creates the types at **github.com/organizations/nf-core/settings/issue-types**, named exactly `Pipeline`, `RFC`, and `Special Interest Group`.
+2. Add the matching `type:` key to each issue-form template, e.g. `type: "Pipeline"` in `new_pipeline.yml`.
 
 > Order matters: the types must exist **before** the templates reference them,
 > otherwise opening an issue from a template with an unknown `type:` fails
