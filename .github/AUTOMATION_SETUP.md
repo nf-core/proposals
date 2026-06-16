@@ -1,34 +1,30 @@
 # Proposal automation — one-time org setup
 
 The approval automation in `.github/workflows/` (pipeline / RFC / SIG) is
-self-contained, but two enhancements need a one-time configuration step from an
-**org owner**, because a GitHub Actions / app token cannot perform them itself.
+self-contained. The project-board `Status` automation below needs a one-time
+configuration step from an **org owner**, because a GitHub Actions / app token
+cannot grant itself project access.
 
-## 1. Issue types (`Pipeline`, `RFC`, `Special Interest Group`)
+## 1. Issue types (`Pipeline`, `RFC`, `Special Interest Group`) — optional, not currently enabled
 
-The issue-form templates set a native **issue type** via the `type:` key:
+Proposals are already distinguished by their template, their
+`new-pipeline` / `new-rfc` / `new-special-interest-group` labels, and their
+separate project boards, so native **issue types** are an optional extra rather
+than a requirement. They are **not** wired up in this repo today.
 
-| Template                         | `type:` value            |
-| -------------------------------- | ------------------------ |
-| `new_pipeline.yml`               | `Pipeline`               |
-| `new_rfc.yml`                    | `RFC`                    |
-| `new_special_interest_group.yml` | `Special Interest Group` |
+If you later decide you want them (e.g. for `type:Pipeline` filtering in issue
+search):
 
-Issue types are defined at the **organisation** level, so they must exist
-**before** these template changes are merged, otherwise opening an issue from a
-template that references a missing type will fail validation.
+1. An org owner creates the types at
+   **github.com/organizations/nf-core/settings/issue-types**, named exactly
+   `Pipeline`, `RFC`, and `Special Interest Group`.
+2. Add the matching `type:` key to each issue-form template, e.g.
+   `type: "Pipeline"` in `new_pipeline.yml`.
 
-**Org owner steps (do this first):**
-
-1. Go to **github.com/organizations/nf-core/settings/issue-types**.
-2. Create three types with names matching the table above _exactly_
-   (they are case-sensitive). Suggested descriptions:
-   - **Pipeline** — A proposal for a new nf-core pipeline.
-   - **RFC** — A request for comment on a major cross-community change.
-   - **Special Interest Group** — A proposal for a new nf-core special interest group.
-3. Once the types exist, this PR is safe to merge.
-
-> The integration token used here returns `403 Resource not accessible by integration` when listing/managing issue types, which is why this step is manual.
+> Order matters: the types must exist **before** the templates reference them,
+> otherwise opening an issue from a template with an unknown `type:` fails
+> validation. (The bot token can't manage types itself — it returns
+> `403 Resource not accessible by integration` — which is why this is manual.)
 
 ## 2. Project board Status automation
 

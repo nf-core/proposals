@@ -2,7 +2,6 @@ name: New RFC proposal
 description: Propose a major new functionality for incorporation into nf-core
 title: "New RFC: <short sentence describing proposal>"
 labels: ["new-rfc", "proposed"]
-type: "RFC"
 projects: ["nf-core/127"]
 body:
   - type: checkboxes

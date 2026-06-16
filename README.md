@@ -86,8 +86,9 @@ The curator workflow is as follows:
 ## Developer Documentation
 
 > [!NOTE]
-> Issue types and the project-board `Status` automation require a one-time org
-> setup step. See [`.github/AUTOMATION_SETUP.md`](.github/AUTOMATION_SETUP.md).
+> The project-board `Status` automation requires a one-time org setup step
+> (granting the bot project access). See
+> [`.github/AUTOMATION_SETUP.md`](.github/AUTOMATION_SETUP.md).
 
 ### Approval Automation Testing
 
