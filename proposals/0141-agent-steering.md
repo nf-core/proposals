@@ -3,6 +3,7 @@
 - Implementation PRs:
   - https://github.com/nf-core/tools/pull/4318
   - https://github.com/nf-core/agents/pull/2
+  - https://github.com/nf-core/modules/pull/12028
 
 # Summary
 
