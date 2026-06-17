@@ -2,6 +2,7 @@
 - Reference Issues: https://github.com/nf-core/proposals/issues/141
 - Implementation PRs:
   - https://github.com/nf-core/tools/pull/4318
+  - https://github.com/nf-core/agents/pull/2
 
 # Summary
 
