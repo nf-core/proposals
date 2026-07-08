@@ -28,7 +28,7 @@ This system was fine when the processes only consisted of the `script` block. Wh
 
 However, Nextflow does support setting default directly as a process directive (at the top of the process declaration), like so:
 
-```
+```groovy
 ext prefix: "${meta.id}", args: ''
 ```
 
