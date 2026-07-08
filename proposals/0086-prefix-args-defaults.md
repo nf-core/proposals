@@ -2,7 +2,6 @@
 - Reference Issues: https://github.com/nf-core/proposals/issues/86
 <!-- - Implementation PR: TODO add PR -->
 
-
 # Summary
 
 nf-core modules currently define defaults for `ext.prefix` and `ext.args` inside both the `script` and `stub` blocks, leading to code duplication. This RFC proposes moving those defaults to the process `ext` directive, which is a native Nextflow feature. This eliminates redundant definitions and reduces the risk of mismatches between the `script` and `stub` blocks. Output block references and in-script variable usages are updated to use `task.ext.prefix` and `task.ext.args` directly. nf-core linting will be updated to enforce this new convention across all modules.
@@ -36,7 +35,6 @@ ext prefix: "${meta.id}", args: ''
 > [!NOTE]
 > nf-core modules also use a third ext variable, namely `ext.when`. During testing we noticed some weird behaviour for ext variables where the default is set using the above method. For that reason we decided to not set the `ext.when` default with this method. Support for the `when` block will be removed when migrating pipelines to strict syntax so this behaviour will not be used for much longer. This can thus be ignored for now.
 
-
 # Goals
 
 - Reduce code duplication in processes by only stating the ext variables defaults once
@@ -45,7 +43,7 @@ ext prefix: "${meta.id}", args: ''
 
 # Non-Goals
 
-- Break the current way we use modules. This system should be completely backwards compatible for all DSL2 pipelines. 
+- Break the current way we use modules. This system should be completely backwards compatible for all DSL2 pipelines.
 - Update `ext.when` since this does not work with the suggested implementation
 
 # Detailed Design
