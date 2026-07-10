@@ -111,15 +111,15 @@ A new linting test is added to `nf-core pipelines lint`. This test verifies that
 
 ## Drafting stage
 
-- [ ] Creating `nf-core/agents` (core team)
+- [x] Creating `nf-core/agents` (core team)
 - [x] Pipeline `AGENTS.md` first draft (anyone)
-- [ ] Central `AGENTS.md` first draft (anyone)
+- [x] Central `AGENTS.md` first draft (anyone)
 
 ## Testing stage
 
-- [ ] Manual addition of `AGENTS.md` to:
-  - [ ] `nf-core/modules` (maintainers)
-  - [ ] at least 5 pipelines (volunteer pipeline maintainers)
+- [x] Manual addition of `AGENTS.md` to:
+  - [x] `nf-core/modules` (maintainers)
+  - [x] at least 5 pipelines (volunteer pipeline maintainers)
 - [ ] Testing by volunteers for at least 1 month (volunteer developers)
 
 ## Implementation stage
