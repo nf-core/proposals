@@ -20,6 +20,33 @@ class ApprovalManager {
     return users.length ? users.map((u) => `[@${u}](https://github.com/${u})`).join(", ") : "-";
   }
 
+  // Determine the status of a pipeline proposal from durable issue state and
+  // votes, rather than from the event that happened to trigger the workflow.
+  determinePipelineStatus(issue) {
+    const labels = (issue.labels || []).map((label) => (typeof label === "string" ? label : label.name));
+    const approvalThresholdReached =
+      this.coreApprovals.size >= 2 || (this.coreApprovals.size >= 1 && this.maintainerApprovals.size >= 1);
+    const rejectionThresholdReached =
+      (this.coreRejections.size >= 2 || (this.coreRejections.size >= 1 && this.maintainerRejections.size >= 1)) &&
+      this.coreApprovals.size === 0 &&
+      this.maintainerApprovals.size === 0;
+    const closedAsRejected =
+      issue.state === "closed" &&
+      issue.state_reason === "not_planned" &&
+      (this.coreRejections.size > 0 || this.maintainerRejections.size > 0);
+
+    if (labels.includes("timed-out")) {
+      return "⏰ Timed Out";
+    }
+    if (closedAsRejected || rejectionThresholdReached) {
+      return "❌ Rejected";
+    }
+    if (approvalThresholdReached) {
+      return "✅ Approved";
+    }
+    return "🕐 Pending";
+  }
+
   // Helper to fetch team members
   async getTeamMembers(teamSlug) {
     try {
@@ -91,6 +118,16 @@ class ApprovalManager {
     // Combine existing non-status labels with new status label
     const updatedLabels = [...existingLabels, newStatusLabel];
 
+    // Avoid triggering another workflow run when the labels are already right.
+    const currentLabels = issue.data.labels.map((label) => (typeof label === "string" ? label : label.name));
+    if (
+      currentLabels.length === updatedLabels.length &&
+      currentLabels.every((label) => updatedLabels.includes(label))
+    ) {
+      console.log("Issue labels already up to date - no update required.");
+      return;
+    }
+
     // Update labels
     await this.github.rest.issues.update({
       owner: this.org,
@@ -102,7 +139,21 @@ class ApprovalManager {
 
   // Helper to find and update status comment
   async updateStatusComment(statusBody) {
-    let statusComment = this.comments.find((c) => c.body.startsWith("## Approval status:"));
+    const statusComments = this.comments.filter((c) => c.body && c.body.startsWith("## Approval status:"));
+    const statusComment = statusComments[0];
+
+    // Opening an issue also applies its template labels. Older workflow runs
+    // could race and create more than one status comment; clean those up when
+    // the issue is next processed.
+    for (const duplicate of statusComments.slice(1)) {
+      console.log(`Deleting duplicate status comment ${duplicate.id}.`);
+      await this.github.rest.issues.deleteComment({
+        owner: this.org,
+        repo: this.repo,
+        comment_id: duplicate.id,
+      });
+    }
+
     if (statusComment) {
       if (statusComment.body.trim() === statusBody.trim()) {
         console.log("Status comment already up to date - no update required.");

@@ -6,6 +6,10 @@ on:
   issue_comment:
     types: [created, edited]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 jobs:
   rfc_approval:
     # Only run for RFC proposal issues

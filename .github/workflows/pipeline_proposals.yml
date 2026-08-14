@@ -6,6 +6,12 @@ on:
   issue_comment:
     types: [created, edited]
 
+# Issue templates apply labels at the same time as the issue is opened. Process
+# those events in order so they cannot race to create or overwrite status state.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 jobs:
   pipeline_approval:
     # Only run for pipeline proposal issues
@@ -69,37 +75,9 @@ jobs:
               return body;
             }
 
-            // Handle label changes
-            if (context.eventName === 'issues' && (context.payload.action === 'labeled' || context.payload.action === 'unlabeled')) {
-              const label = context.payload.label.name;
-              if (label === 'timed-out') {
-                console.log('Timed-out label detected, updating status');
-                const statusBody = generateStatusBody('⏰ Timed Out');
-                await approvalManager.updateStatusComment(statusBody);
-                return;
-              }
-            }
-
-            // Handle new issue creation
-            if (context.eventName === 'issues' && context.payload.action === 'opened') {
-              const body = generateStatusBody('🕐 Pending');
-              console.log('Creating initial comment for review status');
-              await approvalManager.updateStatusComment(body);
-              await approvalManager.updateIssueStatus('🕐 Pending');
-              return;
-            }
-
-
-
-
-            // Determine status
-            let status = '🕐 Pending';
-
-            if (context.eventName === 'issues' && context.payload.action === 'closed' && context.payload.issue.state_reason === 'not_planned' && (approvalManager.coreRejections.size > 0 || approvalManager.maintainerRejections.size > 0)) {
-              status = '❌ Rejected';
-            } else if ((approvalManager.coreApprovals.size >= 2) || (approvalManager.coreApprovals.size >= 1 && approvalManager.maintainerApprovals.size >= 1)) {
-              status = '✅ Approved';
-            }
+            // Derive status from the issue and all votes on every event. This
+            // keeps later label events from reverting a rejected issue to pending.
+            const status = approvalManager.determinePipelineStatus(context.payload.issue);
 
             const statusBody = generateStatusBody(status);
             console.log('New status body to post:\n', statusBody);

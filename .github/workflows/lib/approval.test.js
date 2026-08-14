@@ -11,6 +11,7 @@ const mockGithub = {
       update: jest.fn(),
       updateComment: jest.fn(),
       createComment: jest.fn(),
+      deleteComment: jest.fn(),
     },
   },
 };
@@ -57,6 +58,56 @@ describe("ApprovalManager", () => {
       expect(approvalManager.formatUserList(["user1", "user2"])).toBe(
         "[@user1](https://github.com/user1), [@user2](https://github.com/user2)",
       );
+    });
+  });
+
+  describe("determinePipelineStatus", () => {
+    const issue = (overrides = {}) => ({ state: "open", state_reason: null, labels: [], ...overrides });
+
+    it("should approve with 2 core approvals", () => {
+      approvalManager.coreApprovals = new Set(["core1", "core2"]);
+
+      expect(approvalManager.determinePipelineStatus(issue())).toBe("✅ Approved");
+    });
+
+    it("should reject with 2 core rejections and no approvals", () => {
+      approvalManager.coreRejections = new Set(["core1", "core2"]);
+
+      expect(approvalManager.determinePipelineStatus(issue())).toBe("❌ Rejected");
+    });
+
+    it("should reject with 1 core and 1 maintainer rejection", () => {
+      approvalManager.coreRejections = new Set(["core1"]);
+      approvalManager.maintainerRejections = new Set(["maintainer1"]);
+
+      expect(approvalManager.determinePipelineStatus(issue())).toBe("❌ Rejected");
+    });
+
+    it("should stay pending when rejection votes are opposed by an approval", () => {
+      approvalManager.coreRejections = new Set(["core1", "core2"]);
+      approvalManager.coreApprovals = new Set(["core3"]);
+
+      expect(approvalManager.determinePipelineStatus(issue())).toBe("🕐 Pending");
+    });
+
+    it("should preserve a manual rejected closure on later events", () => {
+      approvalManager.coreRejections = new Set(["core1"]);
+
+      expect(approvalManager.determinePipelineStatus(issue({ state: "closed", state_reason: "not_planned" }))).toBe(
+        "❌ Rejected",
+      );
+    });
+
+    it("should handle the Dragen case regardless of the incorrect close reason", () => {
+      approvalManager.coreRejections = new Set(["core1", "core2", "core3", "core4"]);
+
+      expect(approvalManager.determinePipelineStatus(issue({ state: "closed", state_reason: "completed" }))).toBe(
+        "❌ Rejected",
+      );
+    });
+
+    it("should preserve the timed-out label", () => {
+      expect(approvalManager.determinePipelineStatus(issue({ labels: [{ name: "timed-out" }] }))).toBe("⏰ Timed Out");
     });
   });
 
@@ -174,6 +225,12 @@ describe("ApprovalManager", () => {
     });
 
     it("should add proposed label for pending status", async () => {
+      mockGithub.rest.issues.get.mockResolvedValueOnce({
+        data: {
+          labels: [{ name: "bug" }, { name: "accepted" }, { name: "enhancement" }],
+        },
+      });
+
       await approvalManager.updateIssueStatus("🕐 Pending");
 
       expect(mockGithub.rest.issues.get).toHaveBeenCalledWith({
@@ -211,6 +268,16 @@ describe("ApprovalManager", () => {
         labels: ["documentation", "priority-high", "turned-down"],
       });
     });
+
+    it("should not update labels when they are already correct", async () => {
+      mockGithub.rest.issues.get.mockResolvedValueOnce({
+        data: { labels: [{ name: "bug" }, { name: "accepted" }] },
+      });
+
+      await approvalManager.updateIssueStatus("✅ Approved");
+
+      expect(mockGithub.rest.issues.update).not.toHaveBeenCalled();
+    });
   });
 
   describe("updateStatusComment", () => {
@@ -241,6 +308,42 @@ describe("ApprovalManager", () => {
 
     it("should create new status comment if none exists", async () => {
       approvalManager.comments = [];
+      const statusBody = "## Approval status: New status";
+
+      await approvalManager.updateStatusComment(statusBody);
+
+      expect(mockGithub.rest.issues.createComment).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        issue_number: mockIssueNumber,
+        body: statusBody,
+      });
+    });
+
+    it("should delete duplicate status comments and update the first", async () => {
+      approvalManager.comments = [
+        { id: 1, body: "## Approval status: Old status" },
+        { id: 2, body: "## Approval status: Old status" },
+      ];
+      const newStatusBody = "## Approval status: New status";
+
+      await approvalManager.updateStatusComment(newStatusBody);
+
+      expect(mockGithub.rest.issues.deleteComment).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        comment_id: 2,
+      });
+      expect(mockGithub.rest.issues.updateComment).toHaveBeenCalledWith({
+        owner: mockOrg,
+        repo: mockRepo,
+        comment_id: 1,
+        body: newStatusBody,
+      });
+    });
+
+    it("should ignore comments with no body", async () => {
+      approvalManager.comments = [{ id: 1, body: null }];
       const statusBody = "## Approval status: New status";
 
       await approvalManager.updateStatusComment(statusBody);
