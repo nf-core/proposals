@@ -24,8 +24,9 @@ To make a new proposal, please create a new issue in the repository following th
 - [x] Issue creation triggers automation that:
   - Adds the 'proposed' label
   - Creates a status comment tracking approvals
+  - Sets the [project board](https://github.com/orgs/nf-core/projects/104) `Status` to 'proposed'
 - [x] Team members use `/approve` or `/reject` commands in comments
-- [x] Automation updates status comment and labels based on approvals
+- [x] Automation updates status comment, labels and the project board `Status` based on approvals ('accepted' / 'turned-down' / 'timed-out')
 - [x] Acceptance requires either:
   - Two core team members
   - One core team member + one maintainer
@@ -83,6 +84,11 @@ The curator workflow is as follows:
 - [ ] Finally merge the PR when the development is complete.
 
 ## Developer Documentation
+
+> [!NOTE]
+> The project-board `Status` automation requires a one-time org setup step
+> (granting the bot project access). See
+> [`.github/AUTOMATION_SETUP.md`](.github/AUTOMATION_SETUP.md).
 
 ### Approval Automation Testing
 
