@@ -73,7 +73,7 @@ body:
       label: "This proposal may include software that has non-open source or restrictive licenses."
       description: Indicate if your proposal may require special discussion about software licensing in certain modules.
       options:
-        - label: Yes
+        - label: "Yes"
 
   - type: textarea
     attributes:
