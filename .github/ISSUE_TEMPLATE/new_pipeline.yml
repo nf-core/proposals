@@ -68,6 +68,13 @@ body:
         - label: be bundled using versioned Docker/Singularity containers.
           required: true
 
+  - type: checkboxes
+    attributes:
+      label: "This proposal may include software that has non-open source or restrictive licenses."
+      description: Indicate if your proposal may require special discussion about software licensing in certain modules.
+      options:
+        - label: Yes
+
   - type: textarea
     attributes:
       label: Why do we need a new pipeline?
