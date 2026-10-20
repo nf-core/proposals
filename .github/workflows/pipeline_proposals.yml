@@ -33,6 +33,18 @@ jobs:
             const org = context.repo.owner;
             const repo = context.repo.repo;
 
+            // Project board (GitHub Project v2) to mirror the approval status onto.
+            const PROJECT_NUMBER = 104; // nf-core pipelines proposals board
+            // Maps the internal approval status to the name of the Status
+            // single-select option on the project board. Update the option names
+            // on the right to match the board's configured Status options.
+            const PROJECT_STATUS = {
+              '🕐 Pending': 'proposed',
+              '✅ Approved': 'accepted',
+              '❌ Rejected': 'turned-down',
+              '⏰ Timed Out': 'timed-out',
+            };
+
             // Initialize approval manager
             const approvalManager = await new ApprovalManager(github, org, repo, issueNumber).initialize();
 
@@ -84,3 +96,4 @@ jobs:
 
             await approvalManager.updateStatusComment(statusBody);
             await approvalManager.updateIssueStatus(status);
+            await approvalManager.updateProjectStatus(PROJECT_NUMBER, PROJECT_STATUS[status]);

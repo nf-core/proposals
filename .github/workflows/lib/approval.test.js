@@ -4,6 +4,7 @@ const ApprovalManager = require("./approval.js");
 const mockGithub = {
   request: jest.fn(),
   paginate: jest.fn(),
+  graphql: jest.fn(),
   rest: {
     issues: {
       listComments: jest.fn(),
@@ -334,6 +335,7 @@ describe("ApprovalManager", () => {
         repo: mockRepo,
         comment_id: 2,
       });
+      expect(mockGithub.rest.issues.deleteComment).toHaveBeenCalledTimes(1);
       expect(mockGithub.rest.issues.updateComment).toHaveBeenCalledWith({
         owner: mockOrg,
         repo: mockRepo,
@@ -354,6 +356,71 @@ describe("ApprovalManager", () => {
         issue_number: mockIssueNumber,
         body: statusBody,
       });
+    });
+  });
+
+  describe("updateProjectStatus", () => {
+    const projectQueryResult = {
+      organization: {
+        projectV2: {
+          id: "PVT_1",
+          field: {
+            id: "FIELD_1",
+            options: [
+              { id: "OPT_PROPOSED", name: "Proposed" },
+              { id: "OPT_ACCEPTED", name: "Accepted" },
+            ],
+          },
+        },
+      },
+      repository: { issue: { id: "ISSUE_1" } },
+    };
+
+    it("adds the issue to the board and sets the matching Status option", async () => {
+      mockGithub.graphql
+        .mockResolvedValueOnce(projectQueryResult)
+        .mockResolvedValueOnce({ addProjectV2ItemById: { item: { id: "ITEM_1" } } })
+        .mockResolvedValueOnce({ updateProjectV2ItemFieldValue: { projectV2Item: { id: "ITEM_1" } } });
+
+      await approvalManager.updateProjectStatus(104, "Accepted");
+
+      expect(mockGithub.graphql).toHaveBeenCalledTimes(3);
+      const [, addVars] = mockGithub.graphql.mock.calls[1];
+      expect(addVars).toEqual({ project: "PVT_1", content: "ISSUE_1" });
+      const [, updateVars] = mockGithub.graphql.mock.calls[2];
+      expect(updateVars).toEqual({ project: "PVT_1", item: "ITEM_1", field: "FIELD_1", option: "OPT_ACCEPTED" });
+    });
+
+    it("matches the Status option case-insensitively", async () => {
+      mockGithub.graphql
+        .mockResolvedValueOnce(projectQueryResult)
+        .mockResolvedValueOnce({ addProjectV2ItemById: { item: { id: "ITEM_1" } } })
+        .mockResolvedValueOnce({ updateProjectV2ItemFieldValue: { projectV2Item: { id: "ITEM_1" } } });
+
+      await approvalManager.updateProjectStatus(104, "  proposed  ");
+
+      const [, updateVars] = mockGithub.graphql.mock.calls[2];
+      expect(updateVars.option).toBe("OPT_PROPOSED");
+    });
+
+    it("does nothing when the option name is missing", async () => {
+      await approvalManager.updateProjectStatus(104, undefined);
+      expect(mockGithub.graphql).not.toHaveBeenCalled();
+    });
+
+    it("does not set a value when no option matches", async () => {
+      mockGithub.graphql.mockResolvedValueOnce(projectQueryResult);
+
+      await approvalManager.updateProjectStatus(104, "Nonexistent");
+
+      // Only the lookup query runs; no add/update mutations.
+      expect(mockGithub.graphql).toHaveBeenCalledTimes(1);
+    });
+
+    it("swallows GraphQL errors so the core automation is unaffected", async () => {
+      mockGithub.graphql.mockRejectedValueOnce(new Error("Resource not accessible by integration"));
+
+      await expect(approvalManager.updateProjectStatus(104, "Accepted")).resolves.toBeUndefined();
     });
   });
 

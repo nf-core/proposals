@@ -177,6 +177,96 @@ class ApprovalManager {
     }
   }
 
+  // Update the proposal's Status field on its GitHub Project (v2) board.
+  //
+  // `projectNumber` is the org-level project number (e.g. 104 for pipelines).
+  // `statusOptionName` is the name of the single-select Status option to set;
+  // it is matched case-insensitively against the board's configured options.
+  //
+  // This is best-effort: any problem (missing project scope on the token, no
+  // Status field, an unknown option name, etc.) is logged and swallowed so it
+  // never breaks the core label/comment automation.
+  async updateProjectStatus(projectNumber, statusOptionName) {
+    if (!projectNumber || !statusOptionName) {
+      return;
+    }
+    try {
+      // Resolve the project, its Status field + options, and the issue node id.
+      const data = await this.github.graphql(
+        `query($org: String!, $number: Int!, $repo: String!, $issue: Int!) {
+          organization(login: $org) {
+            projectV2(number: $number) {
+              id
+              field(name: "Status") {
+                ... on ProjectV2SingleSelectField {
+                  id
+                  options { id name }
+                }
+              }
+            }
+          }
+          repository(owner: $org, name: $repo) {
+            issue(number: $issue) { id }
+          }
+        }`,
+        { org: this.org, number: projectNumber, repo: this.repo, issue: this.issueNumber },
+      );
+
+      const project = data.organization && data.organization.projectV2;
+      const issueId = data.repository && data.repository.issue && data.repository.issue.id;
+      if (!project || !issueId) {
+        console.log(`Could not resolve project #${projectNumber} or issue node id; skipping Status update.`);
+        return;
+      }
+
+      const statusField = project.field;
+      if (!statusField || !statusField.options) {
+        console.log(`Project #${projectNumber} has no single-select "Status" field; skipping Status update.`);
+        return;
+      }
+
+      const option = statusField.options.find(
+        (o) => o.name.trim().toLowerCase() === statusOptionName.trim().toLowerCase(),
+      );
+      if (!option) {
+        console.log(
+          `Project #${projectNumber} has no Status option matching "${statusOptionName}". ` +
+            `Available options: ${statusField.options.map((o) => o.name).join(", ")}. Skipping Status update.`,
+        );
+        return;
+      }
+
+      // Ensure the issue is on the board (idempotent - returns the existing item
+      // if it is already there), then set its Status.
+      const added = await this.github.graphql(
+        `mutation($project: ID!, $content: ID!) {
+          addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
+            item { id }
+          }
+        }`,
+        { project: project.id, content: issueId },
+      );
+      const itemId = added.addProjectV2ItemById.item.id;
+
+      await this.github.graphql(
+        `mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+          updateProjectV2ItemFieldValue(input: {
+            projectId: $project,
+            itemId: $item,
+            fieldId: $field,
+            value: { singleSelectOptionId: $option }
+          }) {
+            projectV2Item { id }
+          }
+        }`,
+        { project: project.id, item: itemId, field: statusField.id, option: option.id },
+      );
+      console.log(`Set project #${projectNumber} Status to "${option.name}".`);
+    } catch (err) {
+      console.error(`Failed to update project #${projectNumber} Status (continuing anyway):`, err.message || err);
+    }
+  }
+
   // Helper to process comments and collect votes
   processComments() {
     // Reset all approval sets
