@@ -33,7 +33,7 @@ allowed=(
 # network access. Allow only the hosts the scripts and gh need.
 settings='{
     "sandbox": {
-        "network": { "allowedDomains": ["api.github.com", "nf-co.re", "bio.tools", "api.anaconda.org"] }
+        "network": { "allowedDomains": ["api.github.com", "raw.githubusercontent.com", "nf-co.re", "bio.tools", "api.anaconda.org"] }
     }
 }'
 
