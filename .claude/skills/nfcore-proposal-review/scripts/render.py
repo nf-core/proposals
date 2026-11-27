@@ -63,7 +63,10 @@ def render(r: dict) -> str:
         criterion("Testability", c["testability"]),
         criterion("Sustainability", c["sustainability"]),
         "",
-        "### Overlap",
+        "<details>",
+        "<summary>Full review</summary>",
+        "",
+        "## Overlap",
         "",
         *(f"- {o['pipeline']} — {o['note']}" for o in r["overlap"]),
         *(related_proposal(p) for p in r["related_proposals"]),
@@ -91,6 +94,7 @@ def render(r: dict) -> str:
         for s in sorted(r["next_steps"], key=lambda s: list(NEXT_STEP_LABELS).index(s["kind"])):
             lines += point(f"**{NEXT_STEP_LABELS[s['kind']]}:** {s['title']}", s["details"])
 
+    lines += ["", "</details>"]
     return link_names("\n".join(lines)) + "\n"
 
 
