@@ -26,6 +26,7 @@ def result_text(block: dict) -> str:
 def main() -> None:
     commands: dict[str, str] = {}
     succeeded: set[str] = set()
+    failures: list[str] = []
     with open(sys.argv[1]) as log:
         for line in log:
             message = json.loads(line).get("message")
@@ -35,11 +36,17 @@ def main() -> None:
                     commands[block["id"]] = block["input"].get("command", "")
                 elif block.get("type") == "tool_result" and block.get("tool_use_id") in commands:
                     text = result_text(block)
+                    command = commands[block["tool_use_id"]]
                     if not block.get("is_error") and not any(m in text for m in FAILURE_MARKERS):
-                        succeeded.update(s for s in REQUIRED if s in commands[block["tool_use_id"]])
+                        succeeded.update(s for s in REQUIRED if s in command)
+                    elif any(s in command for s in REQUIRED):
+                        failures.append(f"$ {command}\n{text[:1500]}")
 
     missing = [s for s in REQUIRED if s not in succeeded]
     if missing:
+        print("::group::Output of the failed research commands")
+        print("\n\n".join(failures))
+        print("::endgroup::")
         print(f"::error::These research scripts never ran successfully: {', '.join(missing)}. Not posting the review.")
         sys.exit(1)
     print("All research scripts ran successfully.")
