@@ -1,0 +1,95 @@
+name: Pipeline proposal AI review
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Proposal issue number to review
+        required: true
+        type: number
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+
+jobs:
+  # Anyone can open an issue, so the proposal text is untrusted input to the
+  # agent. This job can only read; posting happens in a separate job with no LLM.
+  review:
+    # Issue templates apply labels at creation, which fires `labeled` too.
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'new-pipeline'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLAUDE_CODE_USE_BEDROCK: "1"
+      ANTHROPIC_MODEL: eu.anthropic.claude-opus-5-5
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: eu.anthropic.claude-opus-5-5
+      # Strips AWS credentials from the agent's shell commands (gh keeps GH_TOKEN)
+      CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: aws-actions/configure-aws-credentials@45666896f5d8e0f10ae255413f3a4cdd03bdc8f5 # v6.3.1
+        with:
+          role-to-assume: ${{ vars.AWS_BEDROCK_ROLE_ARN }}
+          aws-region: eu-west-1
+          role-duration-seconds: 1800
+
+      - name: Install Claude Code and nf-core tools
+        run: |
+          npm install -g @anthropic-ai/claude-code@2.1.332
+          pipx install "nf-core>=4"
+
+      - name: Run review
+        run: |
+          gh issue view "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json number,title,url,author,state,labels,body,comments > proposal.json
+          bash .github/proposal-review/review.sh "$ISSUE_NUMBER" proposal.json > result.json
+
+          jq -r '"Cost: $\(.total_cost_usd), turns: \(.num_turns)"' result.json
+          jq -e '.is_error | not' result.json > /dev/null
+          scripts=.claude/skills/nfcore-proposal-review/scripts
+          jq -e .structured_output result.json | python3 "$scripts/verify.py" "$ISSUE_NUMBER" | python3 "$scripts/render.py" > review.md
+
+      # Artifacts on a public repo can be downloaded by anyone, so check before uploading.
+      - name: Refuse to upload anything that looks like a credential
+        run: |
+          if grep -Eq '(AKIA|ASIA)[A-Z0-9]{16}|gh[pousr]_[A-Za-z0-9]{36}' review.md; then
+            echo "::error::Review output contains what looks like a credential; not uploading."
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: review
+          path: review.md
+          retention-days: 1
+
+  post:
+    needs: review
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: review
+
+      - name: Post review comment
+        run: gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file review.md
