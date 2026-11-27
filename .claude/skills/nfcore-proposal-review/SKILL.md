@@ -40,7 +40,8 @@ Bash:
     pipelines install each tool.
   - `tool_info.py <tool1> [tool2 ...]`: bio.tools and Bioconda / conda-forge
     entries: description, licence, publications.
-  - `list_pipelines.py`: every nf-core pipeline with its status, description and
+  - `list_pipelines.py <term1> [term2 ...]`: nf-core pipelines matching any of
+    the terms in their name, description or topics, with their status, description and
     topics.
   - `maintainers.py <pipeline>`: code owners, top contributors and recent
     committers.
@@ -50,8 +51,6 @@ Bash:
     reviewing is already in the user message.
 - `gh issue view|list`, `gh search …`, `gh repo view|list` and `gh pr view|list`.
   Use `--jq` to filter JSON output; there is no standalone `jq`.
-- `nf-core modules list|info`, `nf-core subworkflows list|info` and
-  `nf-core pipelines list`.
 
 Everything else, including writes, `gh api` and other binaries, is blocked.
 
@@ -62,7 +61,7 @@ handle from the provided proposal. Then do **all** of the following before you
 score. Each one is cheap, and a review that skips one is guessing:
 
 1. `check_tools.py` and `tool_info.py` on the proposed tools.
-2. `list_pipelines.py`, then `gh repo view nf-core/<name>` per candidate.
+2. `list_pipelines.py` with several terms, then `gh repo view nf-core/<name>` per candidate.
 3. `similar_proposals.py` with a few search terms.
 4. `maintainers.py` for the main overlapping pipeline, if there is one.
 5. Read `references/examples.md`.
@@ -98,7 +97,7 @@ Map the overlap pattern to a scoring hint:
 ### Check existing pipelines directly
 
 ```bash
-python3 <skill-dir>/scripts/list_pipelines.py
+python3 <skill-dir>/scripts/list_pipelines.py <term1> [term2 ...]
 ```
 
 Look specifically for:
@@ -222,6 +221,9 @@ Content rules:
   the score.
 - Always write pipeline names in full as `nf-core/<name>` and Slack channels as
   `#<name>`, not in backticks. The renderer links them.
+- Only call something `nf-core/<name>` if `list_pipelines.py` lists it or it is
+  an nf-core proposal. Name tools and pipelines from elsewhere with their real
+  owner, e.g. `genomic-medicine-sweden/tomte`, never as nf-core ones.
 - In `next_steps`, separate blockers (would need resolving before the proposal
   could be accepted) from points to discuss and optional suggestions. Keep the
   tone suggestive: the whole review is advice. If the scores point to a poor fit,

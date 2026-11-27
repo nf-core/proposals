@@ -4,8 +4,6 @@
 Usage: python3 check_tools.py fastp trimgalore star
 """
 
-import json
-import subprocess
 import sys
 import time
 
@@ -17,8 +15,12 @@ NOT_PIPELINES = {"nf-core/modules", "nf-core/tools"}
 
 
 def nf_core_modules() -> list[str] | None:
-    out = subprocess.run(["nf-core", "modules", "list", "remote", "--json"], capture_output=True, text=True)
-    return json.loads(out.stdout) if out.returncode == 0 else None
+    """Every module in nf-core/modules, e.g. fastp or samtools/sort, from the repo tree."""
+    try:
+        tree = gh_json("api", "repos/nf-core/modules/git/trees/master:modules/nf-core?recursive=1")
+    except GhError:
+        return None
+    return sorted(e["path"].removesuffix("/main.nf") for e in tree["tree"] if e["path"].endswith("/main.nf"))
 
 
 def matching_modules(tool: str, modules: list[str]) -> list[str]:
@@ -39,10 +41,13 @@ def main() -> None:
     if not tools:
         sys.exit("Usage: check_tools.py tool1 [tool2 ...]")
 
+    # A failed lookup exits non-zero so the workflow can refuse a review built without it.
+    failed = False
     modules = nf_core_modules()
     if modules is None:
         print("ERROR: could not list nf-core/modules, module results below are unknown")
         modules = []
+        failed = True
 
     for i, tool in enumerate(tools):
         matches = matching_modules(tool.lower(), modules)
@@ -59,7 +64,10 @@ def main() -> None:
             print(indent(pipelines_installing(query), "(none)"))
         except GhError as e:
             print(f"  ERROR: search failed, result unknown: {e}")
+            failed = True
         print()
+
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
