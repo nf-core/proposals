@@ -49,19 +49,28 @@ jobs:
           aws-region: eu-west-1
           role-duration-seconds: 1800
 
-      - name: Install Claude Code and nf-core tools
+      # The env scrub sandboxes the agent's commands with bubblewrap, which Ubuntu's
+      # AppArmor stops from creating user namespaces unless this restriction is lifted.
+      - name: Install Claude Code and its sandbox
         run: |
+          sudo apt-get install -y --no-install-recommends bubblewrap socat
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           npm install -g @anthropic-ai/claude-code@2.1.332
-          pipx install "nf-core>=4"
 
       - name: Run review
         run: |
           gh issue view "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" \
             --json number,title,url,author,state,labels,body,comments > proposal.json
-          bash .github/proposal-review/review.sh "$ISSUE_NUMBER" proposal.json > result.json
+          bash .github/proposal-review/review.sh "$ISSUE_NUMBER" proposal.json --output-format stream-json --verbose > stream.jsonl
+          jq -c 'select(.type == "result")' stream.jsonl > result.json
 
-          jq -r '"Cost: $\(.total_cost_usd), turns: \(.num_turns)"' result.json
+          echo "::group::Commands the agent ran"
+          jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "tool_use" and .name != "StructuredOutput")
+            | "\(.name): \(.input.command // .input.file_path // "")"' stream.jsonl
+          echo "::endgroup::"
+          jq -r '"Cost: $\(.total_cost_usd), turns: \(.num_turns), blocked commands: \(.permission_denials | length)"' result.json
           jq -e '.is_error | not' result.json > /dev/null
+          python3 .github/proposal-review/check_research.py stream.jsonl
           scripts=.claude/skills/nfcore-proposal-review/scripts
           jq -e .structured_output result.json | python3 "$scripts/verify.py" "$ISSUE_NUMBER" | python3 "$scripts/render.py" > review.md
 

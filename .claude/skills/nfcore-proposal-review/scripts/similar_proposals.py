@@ -25,7 +25,7 @@ def main() -> None:
     if not terms:
         sys.exit("Usage: similar_proposals.py term1 [term2 ...]")
 
-    found = {}
+    found, failed = {}, False
     for term in terms:
         try:
             hits = gh_json(
@@ -34,12 +34,14 @@ def main() -> None:
             )
         except GhError:
             print(f"ERROR: search for '{term}' failed")
+            failed = True
             continue
         found.update({h["number"]: h for h in hits if h["number"] < cutoff()})
 
     for number, h in sorted(found.items()):
         labels = ", ".join(label["name"] for label in h["labels"] if label["name"] != "new-pipeline")
         print(f"#{number} [{h['state']}] {h['title']} (labels: {labels})")
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":

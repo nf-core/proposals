@@ -27,12 +27,15 @@ allowed=(
     "Bash(gh repo view *)"
     "Bash(gh pr view *)"
     "Bash(gh pr list *)"
-    "Bash(nf-core modules list *)"
-    "Bash(nf-core modules info *)"
-    "Bash(nf-core subworkflows list *)"
-    "Bash(nf-core subworkflows info *)"
-    "Bash(nf-core pipelines list *)"
 )
+
+# On Linux the env scrub runs every agent command in a bubblewrap sandbox with no
+# network access. Allow only the hosts the scripts and gh need.
+settings='{
+    "sandbox": {
+        "network": { "allowedDomains": ["api.github.com", "nf-co.re", "bio.tools", "api.anaconda.org"] }
+    }
+}'
 
 {
     echo "/nfcore-proposal-review Review nf-core/proposals#$number. The issue and all of its comments, as JSON from \`gh issue view\`:"
@@ -41,4 +44,5 @@ allowed=(
 # Read is limited to the repo checkout: reads outside it would need a permission prompt, which -p denies.
 } | claude -p --tools Bash,Read --allowedTools "${allowed[@]}" \
     --json-schema "$(cat .claude/skills/nfcore-proposal-review/review.schema.json)" \
+    --settings "$settings" \
     --max-budget-usd "${MAX_BUDGET_USD:-10}" --output-format json "$@"

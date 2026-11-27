@@ -16,11 +16,20 @@ CONDA_URL = "https://api.anaconda.org/package/{}"
 CONDA_PACKAGES = ["bioconda/{}", "conda-forge/{}", "bioconda/bioconductor-{}", "conda-forge/r-{}", "bioconda/r-{}"]
 
 
+class FetchError(Exception):
+    """A lookup failed for a reason other than "not found"."""
+
+
 def get(url: str) -> dict | None:
+    """The JSON at *url*, or None if it doesn't exist (404)."""
     try:
         return fetch_json(url, timeout=20)
-    except (urllib.error.URLError, TimeoutError, ValueError):
-        return None
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return None
+        raise FetchError(f"HTTP {e.code} from {url}") from e
+    except (urllib.error.URLError, TimeoutError, ValueError) as e:
+        raise FetchError(f"{url}: {e}") from e
 
 
 def biotools(tool: str) -> list[str]:
@@ -54,6 +63,7 @@ def main() -> None:
     if not tools:
         sys.exit("Usage: tool_info.py tool1 [tool2 ...]")
 
+    failed = False
     for tool in tools:
         print(f"### {tool}")
         name = tool.lower()
@@ -61,11 +71,18 @@ def main() -> None:
         if not re.fullmatch(r"[a-z0-9._+-]+", name):
             print("  (skipped: not a plain package name)")
             continue
-        print("bio.tools:")
-        print("\n".join(f"  {line}" for line in biotools(name)))
-        print("Conda:")
-        print("\n".join(f"  {line}" for line in conda(name)))
+        for section, lookup in (("bio.tools", biotools), ("Conda", conda)):
+            print(f"{section}:")
+            try:
+                lines = lookup(name)
+            except FetchError as e:
+                lines = [f"ERROR: lookup failed, result unknown: {e}"]
+                failed = True
+            print("\n".join(f"  {line}" for line in lines))
         print()
+
+    # A failed lookup exits non-zero so the workflow can refuse a review built without it.
+    sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
