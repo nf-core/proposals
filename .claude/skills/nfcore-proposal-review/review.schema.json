@@ -1,0 +1,169 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["overall", "criteria", "overlap", "related_proposals", "summary", "why", "reviewers", "next_steps"],
+    "properties": {
+        "overall": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Overall fit score, per the Step 3 table."
+        },
+        "criteria": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["novelty", "specificity", "testability", "sustainability"],
+            "properties": {
+                "novelty": {
+                    "$ref": "#/definitions/criterion"
+                },
+                "specificity": {
+                    "$ref": "#/definitions/criterion"
+                },
+                "testability": {
+                    "$ref": "#/definitions/criterion"
+                },
+                "sustainability": {
+                    "$ref": "#/definitions/criterion"
+                }
+            }
+        },
+        "overlap": {
+            "type": "array",
+            "description": "Existing nf-core pipelines (with a GitHub repository) that overlap or relate. Proposals without a repository go in related_proposals. Empty if there are none.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["pipeline", "note"],
+                "properties": {
+                    "pipeline": {
+                        "type": "string",
+                        "pattern": "^nf-core/[A-Za-z0-9_-]+$",
+                        "description": "e.g. nf-core/rnaseq"
+                    },
+                    "note": {
+                        "type": "string",
+                        "description": "How it overlaps or relates, in a few words."
+                    }
+                }
+            }
+        },
+        "related_proposals": {
+            "type": "array",
+            "description": "Other proposals in nf-core/proposals (open or closed) that overlap with this one, apart from those that already became a pipeline listed in overlap. Include accepted proposals that don't have a pipeline repository yet. Empty if there are none.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["number", "note"],
+                "properties": {
+                    "number": {
+                        "type": "integer",
+                        "description": "The proposal's issue number in nf-core/proposals."
+                    },
+                    "note": {
+                        "type": "string",
+                        "description": "How it overlaps or relates, in a few words."
+                    }
+                }
+            }
+        },
+        "summary": {
+            "type": "string",
+            "description": "One short sentence: what the pipeline will be used for."
+        },
+        "why": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
+            "description": "Typically: the gap it fills, who is behind it, the main risk.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["title", "details"],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "A few words, e.g. \"Fills a real gap.\""
+                    },
+                    "details": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 4,
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "One short sentence per point."
+                    }
+                }
+            }
+        },
+        "reviewers": {
+            "type": "array",
+            "maxItems": 3,
+            "description": "Up to three people who actually drive an overlapping pipeline (see the pitfalls section). Empty if there is no overlap or no handle could be resolved.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["login", "pipeline"],
+                "properties": {
+                    "login": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9-]+$",
+                        "description": "GitHub username, without the @."
+                    },
+                    "pipeline": {
+                        "type": "string",
+                        "pattern": "^nf-core/[A-Za-z0-9_-]+$",
+                        "description": "The overlapping pipeline they maintain, e.g. nf-core/rnaseq."
+                    }
+                }
+            }
+        },
+        "next_steps": {
+            "type": "array",
+            "description": "Only if relevant.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "title", "details"],
+                "properties": {
+                    "kind": {
+                        "enum": ["blocker", "discuss", "suggestion"],
+                        "description": "blocker: would need resolving before the proposal could be accepted. discuss: an open question or concern worth discussing. suggestion: optional, e.g. a concrete path forward."
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "A few words, e.g. \"Settle the scope.\""
+                    },
+                    "details": {
+                        "type": "array",
+                        "maxItems": 4,
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "One short sentence per point. May be empty if the title says it all."
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "criterion": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["score", "note"],
+            "properties": {
+                "score": {
+                    "type": ["integer", "null"],
+                    "minimum": 1,
+                    "maximum": 5,
+                    "description": "Score out of 5. null if it can't be assessed without an answer from the proposer."
+                },
+                "note": {
+                    "type": "string",
+                    "description": "Evidence in at most about eight words. If score is null, the question for the proposer instead."
+                }
+            }
+        }
+    }
+}
